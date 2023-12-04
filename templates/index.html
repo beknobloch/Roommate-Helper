@@ -35,6 +35,7 @@
                 .then(response => response.text())
                 .then(result => {
                     itemList = document.getElementById("list")
+                    itemList.innerHTML = ""
                     resultAsList = result.split(", ")
                     resultAsList.pop()
                     for(let i = 0; i < resultAsList.length; i++){
