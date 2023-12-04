@@ -15,8 +15,11 @@
     <h1>Welcome to Roommate Helper</h1>
 
     <!--Example of connecting frontend & backend -->
-    <button id="myButton">Click me</button>
-    <div id="output"></div>
+    <button id="button1">Click me</button>
+    <div id="output1"></div>
+
+    <button id="button2">Click me</button>
+    <div id="output2"></div>
 
     <ol id="list"></ol>
 
@@ -26,25 +29,26 @@
             fetch('/pass_data', {method: 'POST',})
                 .then(response => response.text())
                 .then(result => {
-                    document.getElementById('output').innerText = result;
+                    document.getElementById('output1').innerText = result;
             })
         }
 
-        function toList() {
-            fetch('/pass_data', {method: 'POST',})
-                .then(response => response.text())
+        function handleList(func) {
+            fetch(func, {method: 'POST',})
+                // response.json() returns a parsed json object which is treated as an array
+                .then(response => response.json())
                 .then(result => {
                     itemList = document.getElementById("list")
                     itemList.innerHTML = ""
-                    resultAsList = result.split(", ")
-                    resultAsList.pop()
-                    for(let i = 0; i < resultAsList.length; i++){
-                        itemList.innerHTML += "<li>" + resultAsList[i] + "</li>";
+
+                    for(let i = 0; i < result.length; i++){
+                        itemList.innerHTML += "<li>" + result[i] + "</li>"
                     }
             })
+  
         }
-        document.getElementById('myButton').addEventListener('click', handleClick);
-        document.getElementById('myButton').addEventListener('click', toList);
+        document.getElementById('button1').addEventListener('click', handleClick)
+        document.getElementById('button2').addEventListener('click', function(){handleList('/pass_list')})
 
     </script>
 

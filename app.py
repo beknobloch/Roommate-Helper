@@ -1,3 +1,4 @@
+import json
 from flask import Flask, render_template
 from user import User
 from item import Item
@@ -29,6 +30,11 @@ def pass_data():
     for i in ledge.get_item_list():
         result += f"{i}, "
     return result
+
+@app.route('/pass_list', methods=['POST'])
+def pass_list():
+    return json.dumps([str(obj) for obj in items])
+
 
 if __name__ == '__main__':
     app.run()
