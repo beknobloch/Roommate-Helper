@@ -3,12 +3,13 @@ import item
 from value import Value
 
 class User:
+    # constructor
     def __init__(self, username, balance, totals=None):
         self.username = username
         self.balance = balance
         self.totals = totals
 
-    def __repr__(self):
+    def get_name(self):
         return self.username
 
     # this method transfers the amount to the balance of user_being_paid
@@ -61,3 +62,6 @@ class User:
             
             return payment
         return -1
+    
+    def __str__(self):
+        return f"Username: {self.username} Balance: {self.balance} Totals: {self.totals}"

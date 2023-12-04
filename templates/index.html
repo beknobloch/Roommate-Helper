@@ -12,8 +12,40 @@
 
 </head>
 <body>
-   <h1>Welcome to Roommate Helper</h1>
+    <h1>Welcome to Roommate Helper</h1>
 
+    <!--Example of connecting frontend & backend -->
+    <button id="myButton">Click me</button>
+    <div id="output"></div>
+
+    <ol id="list"></ol>
+
+    <script>
+        // function to handle button click
+        function handleClick() {
+            fetch('/pass_data', {method: 'POST',})
+                .then(response => response.text())
+                .then(result => {
+                    document.getElementById('output').innerText = result;
+            })
+        }
+
+        function toList() {
+            fetch('/pass_data', {method: 'POST',})
+                .then(response => response.text())
+                .then(result => {
+                    itemList = document.getElementById("list")
+                    resultAsList = result.split(", ")
+                    resultAsList.pop()
+                    for(let i = 0; i < resultAsList.length; i++){
+                        itemList.innerHTML += "<li>" + resultAsList[i] + "</li>";
+                    }
+            })
+        }
+        document.getElementById('myButton').addEventListener('click', handleClick);
+        document.getElementById('myButton').addEventListener('click', toList);
+
+    </script>
 
    <!-- Optional Bootstrap JavaScript support -->
    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

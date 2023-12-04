@@ -4,6 +4,10 @@ class Ledger:
     def __init__(self, item_list):
         self.item_list = item_list
 
+    # returns list of items
+    def get_item_list(self):
+        return self.item_list
+    
     def add_item(self, item):
         self.item_list.append(item)
 
