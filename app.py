@@ -58,6 +58,7 @@ def retrieveData():
     # returns message (not needed)
     return jsonify({'message': 'Success'})
 
+# takes js user input and uses it to create a new item and appends it to the item list
 def updateItemList(newItem):
     items.append(Item(name=newItem[0],price=newItem[1], user_who_paid=me))
     pass_list()
