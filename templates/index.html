@@ -23,6 +23,7 @@
 
     <ol id="list"></ol>
 
+    <h1 id="dict"></h1>
     <script>
         // function to handle button click
         function handleClick() {
@@ -47,8 +48,17 @@
             })
   
         }
+
+        function handleDict(){
+            fetch('/pass_dict', {method: 'POST',})
+                .then(response => response.text())
+                .then(result => {
+                    document.getElementById('dict').innerText = result;
+                })
+        }
         document.getElementById('button1').addEventListener('click', handleClick)
         document.getElementById('button2').addEventListener('click', function(){handleList('/pass_list')})
+        handleDict()
 
     </script>
 

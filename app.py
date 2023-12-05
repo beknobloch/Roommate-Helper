@@ -17,6 +17,14 @@ for i in range(1,10):
 ledge = Ledger(item_list=items)
 print(me)
 
+sample_dict = {
+    "name": "John Doe",
+    "age": 30,
+    "city": "Example City",
+    "email": "john.doe@example.com",
+    "is_student": False,
+    "grades": [85, 92, 78, 90]
+}
 # fake data end
 
 @app.route('/')
@@ -35,6 +43,9 @@ def pass_data():
 def pass_list():
     return json.dumps([str(obj) for obj in items])
 
+@app.route('/pass_dict', methods=['POST'])
+def pass_dict():
+    return json.dumps([[key, value] for key, value in sample_dict.items()])
 
 if __name__ == '__main__':
     app.run()
