@@ -28,11 +28,12 @@
         <button type="button" onclick="sendData()">Submit</button>
     </form>
 
-    <button id="button1">Click me</button>
+    <button id="button1">Fetch text</button>
     <div id="output1"></div>
 
-    <button id="button2">Click me</button>
-    <button id="sendButton">Send data</button>
+    <button id="button2">Fetch list</button>
+    <button id="button3">Fetch dictionary</button>
+    <button id="sendButton">Send data to Python</button>
     <div id="output2"></div>
 
     <ol id="list"></ol>
@@ -102,7 +103,7 @@
         } 
         document.getElementById('button1').addEventListener('click', fetchText)
         document.getElementById('button2').addEventListener('click', function(){fetchList('/pass_list')})
-        fetchDict()
+        document.getElementById('button3').addEventListener('click', fetchDict)
         fetchList('/pass_list')
 
         document.getElementById('sendButton').addEventListener('click', sendData)
