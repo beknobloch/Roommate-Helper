@@ -1,5 +1,5 @@
 import json
-from flask import Flask, render_template
+from flask import Flask, render_template, request, jsonify
 from user import User
 from item import Item
 from ledger import Ledger
@@ -47,5 +47,21 @@ def pass_list():
 def pass_dict():
     return json.dumps([[key, value] for key, value in sample_dict.items()])
 
+@app.route('/retrieveData', methods=['POST']) 
+def retrieveData(): 
+    data = request.get_json()
+    response = data['data']
+    # prints data received
+    print(f"Received data: {response}")
+    updateItemList(response)
+    
+    # returns message (not needed)
+    return jsonify({'message': 'Success'})
+
+def updateItemList(newItem):
+    items.append(Item(name=newItem[0],price=newItem[1], user_who_paid=me))
+    pass_list()
+
+# main
 if __name__ == '__main__':
     app.run()

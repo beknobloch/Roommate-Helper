@@ -1,1 +1,1 @@
-json.dumps(sample_dict)
+retrieveData
