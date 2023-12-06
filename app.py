@@ -1,5 +1,5 @@
 import json
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, url_for, redirect
 from user import User
 from item import Item
 from ledger import Ledger
@@ -7,15 +7,15 @@ from ledger import Ledger
 app = Flask(__name__)
 
 # fake data start
-me = User(username="mmorale",balance =0)
+marcos = User(username="mmorale",balance =0)
 ben = User(username ="bknob",balance =0)
 noah = User(username ="nspina",balance =0)
 
 items = []
 for i in range(1,10):
-    items.append(Item(name=f"me{i}",price=i, user_who_paid=me))
+    items.append(Item(name=f"me{i}",price=i, user_who_paid=marcos))
 ledge = Ledger(item_list=items)
-print(me)
+print(marcos)
 
 sample_dict = {
     "name": "John Doe",
@@ -27,9 +27,22 @@ sample_dict = {
 }
 # fake data end
 
+# use case 1 start
+noah = User(username ="noah",balance =0)
+ben = User(username ="ben",balance =0)
+userList = [noah, ben]
+
+
+# use case 1 end
 @app.route('/')
 def index():  # put application's code here
     return render_template('index.html')
+
+@app.route('/use_case_1', methods=['GET', 'POST'])
+def use_case_1():
+    if request.method == 'POST':
+        return redirect(url_for('index'))
+    return render_template('use_case_1.html')
 
 @app.route('/pass_data', methods=['POST'])
 def pass_data():
@@ -60,7 +73,7 @@ def retrieveData():
 
 # takes js user input and uses it to create a new item and appends it to the item list
 def updateItemList(newItem):
-    items.append(Item(name=newItem[0],price=newItem[1], user_who_paid=me))
+    items.append(Item(name=newItem[0],price=newItem[1], user_who_paid=marcos))
     pass_list()
 
 # main
