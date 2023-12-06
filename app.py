@@ -32,6 +32,14 @@ noah = User(username ="noah",balance =0)
 ben = User(username ="ben",balance =0)
 userList = [noah, ben]
 
+items = [
+    Item(name=f"Cookies",price=4, user_who_paid=noah),
+    Item(name=f"Chicken",price=8, user_who_paid=noah),
+    Item(name=f"Peppers",price=3, user_who_paid=noah),
+    Item(name=f"Garlic",price=1, user_who_paid=noah),
+    Item(name=f"Pasta",price=2, user_who_paid=noah)
+]
+ledger = Ledger(item_list=items)
 
 # use case 1 end
 @app.route('/')
