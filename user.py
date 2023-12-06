@@ -35,7 +35,6 @@ class User:
             if self != itm.user_who_paid:
                 continue
             # calculate the length of users who use the item.
-            # find the number of users the item
             length = len(itm.users_who_use)
             # if the user paid for that item, iterate through the people who use that item
             for person in itm.users_who_use:
