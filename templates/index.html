@@ -25,14 +25,24 @@
       <input type="text" id="userWhoPaidInput" name="userWhoPaidInput">
       <button type="button" onclick="sendData()">Submit</button>
     </form>
-    <button id="button1">Fetch text</button>
-    <div id="output1"></div>
-    <button id="button2">Fetch list</button>
-    <button id="button3">Fetch dictionary</button>
-    <button id="sendButton">Send data to Python</button>
-    <div id="output2"></div>
-    <ol id="list"></ol>
-    <h1 id="dict"></h1>
+
+    <div>
+      <button id="button1">Fetch text</button>
+      <h3 id="output1"></h3>
+
+      <button id="button2">Fetch list</button>
+      <ol id="list"></ol>
+      <br>
+
+      <button id="button3">Fetch dictionary</button>
+      <h3 id="dict"></h3>
+      <button id="sendButton">Send data to Python</button>
+      
+      
+      
+    </div>
+    
+
     <script>
       // fetches text from python (must be string, dict, int, or tuple)
       function fetchText() {
