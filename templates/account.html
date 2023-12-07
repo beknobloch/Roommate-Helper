@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 
 {% block head %}
-<title>User Page</title>
+<title>Account Page</title>
 {% endblock %}
 
 {% block body %}
-    <h1>Welcome to the User Page</h1>
-    <div class="content">
+    <h1>Welcome to the Account Page</h1>
+    <div>
         <table>
             <tr>
                 <th>User</th>
@@ -16,7 +16,7 @@
             </tr>
             {% for user in users %}
                 <tr>
-                    <td>{{ user.content }}</td>
+                    <td>{{ user.username }}</td>
                     <td>{{ user.balance }}</td>
                     <td>{{ user.date_created.date() }}</td>
                     <td>
@@ -25,12 +25,5 @@
                 </tr>
             {% endfor %}
         </table>
-        <form action="/user" method="POST">
-            <label for="username">Username:</label>
-            <input type="text" name="content" id="username">
-            <label for="balance">Balance:</label>
-            <input type="number" name="balance" id="balance">
-            <input type="submit" value="Add User">
-        </form>
     </div>
 {% endblock %}

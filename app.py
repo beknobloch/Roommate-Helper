@@ -5,15 +5,25 @@ from user import User
 from item import Item
 from ledger import Ledger
 from datetime import datetime
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+app.config["SECRET_KEY"] = "abc"
 db = SQLAlchemy(app)
+login_manager = LoginManager()
+login_manager.init_app(app)
 
 
-class Users(db.Model):
+@login_manager.user_loader
+def loader_user(user_id):
+    return Users.query.get(int(user_id))
+
+
+class Users(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    content = db.Column(db.String(200), nullable=False)
+    username = db.Column(db.String(250), unique=True, nullable=False)
+    password = db.Column(db.String(250), nullable=False)
     balance = db.Column(db.Float, nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -43,6 +53,33 @@ sample_dict = {
 # fake data end
 
 
+@login_manager.user_loader
+def loader_user(user_id):
+    return Users.query.get(user_id)
+
+
+@app.route('/register', methods=["GET", "POST"])
+def register():
+    # If the user made a POST request, create a new user
+    if request.method == "POST":
+        new_user = Users(balance=float(request.form.get("balance")),
+                         username=request.form.get("username"),
+                         password=request.form.get("password"))
+
+        try:
+            db.session.add(new_user)
+            db.session.commit()
+        except:
+            return 'There was an issue adding your user'
+        # Once user account created, redirect them
+        # to login route (created later on)
+        users = Users.query.order_by(Users.date_created).all()
+        return render_template('login.html', users=users)
+        # return redirect(url_for('login'))
+    # Renders sign_up template if user made a GET request
+    return render_template("register.html")
+
+
 @app.route('/', methods=['POST', 'GET'])
 def index():  # put application's code here
     return render_template('index.html')
@@ -55,27 +92,27 @@ def delete(id):
     try:
         db.session.delete(user_to_delete)
         db.session.commit()
-        return redirect('/')
+        return redirect(url_for('account'))
     except:
         return "There was a problem deleting that user"
 
 
-@app.route('/user', methods=['POST', 'GET'])
-def add_user():
-    if request.method == 'POST':
-        username_content = request.form['content']
-        balance = float(request.form['balance'])
-        new_user = Users(content=username_content, balance=balance)
+@app.route('/account', methods=['POST', 'GET'])
+def account():
+    users = Users.query.order_by(Users.date_created).all()
+    return render_template('account.html', users=users)
 
-        try:
-            db.session.add(new_user)
-            db.session.commit()
-            return redirect('/')
-        except:
-            return 'There was an issue adding your user'
-    else:
-        users = Users.query.order_by(Users.date_created).all()
-        return render_template('user.html', users=users)
+
+@app.route('/login', methods=['POST', 'GET'])
+def login():
+    if request.method == 'POST':
+        user = Users.query.filter_by(username=request.form.get("username_login")).first()
+        # Check if the password entered is the same as the user's password
+        if login.password == request.form.get("password_login"):
+            # Use the login_user method to log in the user
+            login_user(user)
+            return redirect(url_for('/'))
+    return render_template('login.html')
 
 
 @app.route('/pass_data', methods=['POST'])

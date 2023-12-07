@@ -12,10 +12,22 @@
       {% block head %}{% endblock %}
   </head>
   <body>
-  <nav>
+  {% if current_user.is_authenticated %}
+      <nav>
       <a href="{{ url_for('index') }}">Home</a>
-      <a href="{{ url_for('add_user') }}">User Page</a>
-    </nav>
-    {% block body %}{% endblock %}
+      <a href="{{ url_for('login') }}">Login</a>
+      <a href="{{ url_for('register') }}">Register</a>
+      <a href="{{ url_for('account') }}">Account</a>
+  </nav>
+      <h3>You are logged in</h3>
+      {% else %}
+        <nav>
+      <a href="{{ url_for('index') }}">Home</a>
+      <a href="{{ url_for('login') }}">Login</a>
+      <a href="{{ url_for('register') }}">Register</a>
+  </nav>
+      <h3>You are not logged in</h3>
+  {% endif %}
+  {% block body %}{% endblock %}
   </body>
 </html>

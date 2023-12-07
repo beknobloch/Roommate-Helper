@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Login Page</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+{% endblock %}
+
+
+{% block body %}
+<h1>Create an account</h1>
+<form action="/register" method='POST'>
+    <div class="username">
+        <label for="username">Username:</label>
+        <input type="text" name="username" id="username"/>
+    </div>
+    <div class="password">
+        <label for="password">Password:</label>
+        <input type="text" name="password" id="password"/>
+    </div>
+    <div class="balance">
+        <label for="balance">Balance:</label>
+        <input type="number" name="balance" id="balance">
+    </div>
+    <input type="submit" value="Register">
+</form>
+{% endblock %}
