@@ -13,7 +13,91 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
 <body>
+    <p>
+        <a href="{{ url_for('index') }}"><button>Home</button></a>
+        <a href="{{ url_for('use_case_2') }}"><button>Use Case 2</button></a>
+    </p>
 
     <h1>Use case 1</h1>
+
+    <form id="itemForm">
+        <h4>New Item Form</h4>
+        <label for="itemNameInput">Item Name:</label>
+        <input type="text" id="itemNameInput" name="itemNameInput">
+        <label for="itemPriceInput">Item Price:</label>
+        <input type="number" id="itemPriceInput" name="itemPriceInput">
+        <label for="userWhoPaidInput">User who paid for item:</label>
+        <input type="text" id="userWhoPaidInput" name="userWhoPaidInput">
+        <br>
+        <button type="button" onclick="sendFormData('add_new_item').then(receiveData('get_item_list').then(result => displayItemList(result)))">Add item to list</button>
+    </form>
+    <h4>Add Existing Item</h4>
+    <select name="item_dropdown" class="item_dropdown" id="itemSelect"></select>
+
+    <h4>Item List</h4>
+    <ol id="itemList"></ol>
+    <script>
+        // sends form data to python. methodRoute is the name of the python method you want to call
+        function sendFormData(methodRoute) {
+            let dataArray = []
+            /* sends the user input as an array
+            The array contains each attribute of an item object
+            Python uses this data to create a new item and append it to the item list
+            */
+            $('form input').each(function() {
+                dataArray.push($(this).val());
+            })
+            $.ajax({
+                type: 'POST',
+                url: '/' + methodRoute,
+                contentType: 'application/json;charset=UTF-8',
+                data: JSON.stringify({
+                    data: dataArray
+            }),
+            success: function(response) {
+                console.log('Data sent successfully');
+                console.log(response);
+            },
+            error: function(error) {
+                console.error('Error sending data');
+                console.error(error);  
+            }
+            });
+
+            return Promise.resolve();
+        }
+
+        // receives data from python in list form. methodRoute is the name of the python method you want to call
+        function receiveData(methodRoute){
+            return fetch(methodRoute, {
+                method: 'POST',
+            })
+            // response.json() returns a parsed json object which is treated as an array
+            .then(response => response.json())
+        }
+
+        // displays list of items
+        function displayItemList(list){
+            itemList = document.getElementById("itemList")
+            itemList.innerHTML = ""
+            for (let i = 0; i < list.length; i++) {
+              itemList.innerHTML += " <li> " + list[i] + " </li>"
+            }
+            fillDropdown(list)
+        }
+
+        function fillDropdown(list){
+            itemDropdown = document.getElementById('itemSelect');
+            itemDropdown.innerHTML = "<option value=\"" + "(None)" + "\"> " + "(None)" + " </option>"
+            for(let i = 0; i < list.length; i++){
+                itemDropdown.innerHTML += "<option value=\"" + list[i] + "\"> " + list[i] + " </option>"
+            }
+        }
+        receiveData('get_item_list').then(result => displayItemList(result))
+    </script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 </body>
+
 </html>

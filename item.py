@@ -7,6 +7,9 @@ class Item:
         self.user_who_paid = user_who_paid
         self.paid = False
 
+    def get_name(self):
+        return self.name
+    
     def get_price(self):
         return self.price
     

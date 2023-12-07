@@ -46,6 +46,23 @@ items[1].add_users([noah, ben])
 ledger = Ledger(item_list=items)
 group = Group(userList)
 
+@app.route('/get_item_list', methods=['POST'])
+def get_item_list():
+    return json.dumps([item.get_name() for item in ledger.get_item_list()])
+
+@app.route('/add_new_item', methods=['POST'])
+def add_new_item():
+    data = request.get_json()
+    response = data['data']
+    # prints data received
+    print(f"Received data: {response}")
+    
+    #checks if user
+    response[2] = ben
+    ledger.add_item(Item(name=response[0],price=response[1],user_who_paid=response[2]))
+
+    # returns message (not needed)
+    return jsonify({'message': 'Success'})
 # use case 1 end
 
 # use case 2 start
@@ -70,16 +87,19 @@ def calculate_amount_owed():
 
 # use case 2 end
 
+# renders home page
 @app.route('/')
 def index():  # put application's code here
     return render_template('index.html')
 
+# renders use case 1 page
 @app.route('/use_case_1', methods=['GET', 'POST'])
 def use_case_1():
     if request.method == 'POST':
         return redirect(url_for('index'))
     return render_template('use_case_1.html')
 
+# renders use case 2 page
 @app.route('/use_case_2', methods=['GET', 'POST'])
 def use_case_2():
     if request.method == 'POST':
