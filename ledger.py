@@ -20,9 +20,12 @@ class Ledger:
                 item_share = item.price / len(item.users_who_use)
             else:
                 item_share = 0
-            if item.user_who_paid == receiver and payer in item.users_who_use and not item.users_who_use[payer]:
+            print(item_share)
+            if (item.user_who_paid == receiver) and (payer in item.users_who_use):
                 amount += item_share
-            elif item.user_who_paid == payer and receiver in item.users_who_use and not item.users_who_use[receiver]:
+            elif (item.user_who_paid == payer) and (receiver in item.users_who_use):
                 amount -= item_share
+
+        print(amount)
 
         return amount

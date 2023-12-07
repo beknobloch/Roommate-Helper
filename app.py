@@ -3,6 +3,7 @@ from flask import Flask, render_template, request, jsonify, url_for, redirect
 from user import User
 from item import Item
 from ledger import Ledger
+from group import Group
 
 app = Flask(__name__)
 
@@ -39,7 +40,11 @@ items = [
     Item(name=f"Garlic",price=1, user_who_paid=noah),
     Item(name=f"Pasta",price=2, user_who_paid=noah)
 ]
+items[0].add_users([ben])
+items[1].add_users([noah, ben])
+
 ledger = Ledger(item_list=items)
+group = Group(userList)
 
 # use case 1 end
 
@@ -52,8 +57,16 @@ def get_username_list():
 @app.route('/calculate_amount_owed', methods=['POST'])
 def calculate_amount_owed():
     data = request.get_json()['users']
-    print(ledge.calculate_amount_owed(str(data[0]), str(data[1])))
-    return str(ledge.calculate_amount_owed(str(data[0]), str(data[1])))
+    username1 = str(data[0])
+    username2 = str(data[1])
+    
+    for u in group.user_list:
+        if u.username == username1:
+            user1 = u
+        elif u.username == username2:
+            user2 = u
+
+    return str(ledger.calculate_amount_owed(user1, user2))
 
 # use case 2 end
 
