@@ -12,6 +12,10 @@
       {% block head %}{% endblock %}
   </head>
   <body>
+  <nav>
+      <a href="{{ url_for('index') }}">Home</a>
+      <a href="{{ url_for('add_user') }}">User Page</a>
+    </nav>
     {% block body %}{% endblock %}
   </body>
 </html>
