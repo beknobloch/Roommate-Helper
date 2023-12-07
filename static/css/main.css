@@ -15,6 +15,25 @@ body {
         max-width: 300px;
       }
 
+      nav {
+          background-color: #333; /* Background color */
+          overflow: hidden;
+      }
+
+      nav a {
+        float: left; /* Float the links to the left */
+        display: block; /* Display as block element */
+        color: white; /* Text color */
+        text-align: center; /* Center-align text */
+        padding: 14px 16px; /* Padding around the links */
+        text-decoration: none; /* Remove underline */
+      }
+
+      nav a:hover {
+        background-color: #ddd; /* Background color on hover */
+        color: black; /* Text color on hover */
+      }
+
       table, td, th {
             border: 1px solid #aaa;
         }
