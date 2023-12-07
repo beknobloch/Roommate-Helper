@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Roommate Helper</title>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+
+    <h1>Use case 2</h1>
+
+    <select name="User 1" class="user_dropdown" id="user1select" onchange="checkCalculate()">
+
+    </select>
+
+    <select name="User 2" clas="user_dropdown" id="user2select" onchange="checkCalculate()">
+
+    </select>
+
+    <button id="CalculateButton" class="disabled" disabled onclick="calculate_amount_owed()">Please select two different users.</button>
+
+    <h3><span id="user_display_1">Sam</span> owes <span id="user_display_2">Susan</span></h3>
+    <h2 id="calculate_result">$30</h2>
+
+    <script>
+        retrieveUserList('/get_username_list')
+
+        function retrieveUserList(func) {
+            fetch(func, {
+            method: 'POST',
+          })
+          .then(response => response.json()).then(result => {
+            user1List = document.getElementById('user1select');
+            user2List = document.getElementById('user2select');
+            user1List.innerHTML = "";
+            user2List.innerHTML = "";
+            for (let i = 0; i < result.length; i++) {
+              user1List.innerHTML += " <option value=\"" + result[i] + "\"> " + result[i] + " </option>";
+              user2List.innerHTML += " <option value=\"" + result[i] + "\"> " + result[i] + " </option>";
+            }
+          })
+        }
+
+        function checkCalculate() {
+            let btn = document.getElementById("CalculateButton");
+            if (document.getElementById("user1select").value == document.getElementById("user2select").value) {
+                btn.innerHTML = "Please select two different users.";
+                btn.disabled = true;
+                btn.classList.add("disabled");
+                
+            } else {
+                document.getElementById("CalculateButton").innerHTML = "Calculate amount owed.";
+                document.getElementById("CalculateButton").disabled = false;
+                btn.classList.remove("disabled");
+            }
+        }
+
+        function calculate_amount_owed() {
+            let user1 = document.getElementById("user1select").value;
+            let user2 = document.getElementById("user2select").value;
+            let userList = [user1, user2]
+
+            $.ajax({
+            type: 'POST',
+            url: '/calculate_amount_owed',
+            contentType: 'application/json;charset=UTF-8',
+            data: JSON.stringify({
+                users: userList
+            }),
+            success: function(response) {
+                console.log('Data sent successfully');
+                console.log(response);
+
+                document.getElementById("user_display_1").innerHTML = user1;
+                document.getElementById("user_display_2").innerHTML = user2;
+                document.getElementById("calculate_result").innerHTML = response;
+            },
+            error: function(error) {
+                console.error('Error sending data');
+                console.error(error);
+            }
+            });
+
+            
+        }
+    </script>
+    <!-- Optional Bootstrap JavaScript support -->
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+</html>

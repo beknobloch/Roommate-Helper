@@ -42,6 +42,21 @@ items = [
 ledger = Ledger(item_list=items)
 
 # use case 1 end
+
+# use case 2 start
+
+@app.route('/get_username_list', methods=['POST'])
+def get_username_list():
+    return json.dumps([str(username.username) for username in userList])
+
+@app.route('/calculate_amount_owed', methods=['POST'])
+def calculate_amount_owed():
+    data = request.get_json()['users']
+    print(ledge.calculate_amount_owed(str(data[0]), str(data[1])))
+    return str(ledge.calculate_amount_owed(str(data[0]), str(data[1])))
+
+# use case 2 end
+
 @app.route('/')
 def index():  # put application's code here
     return render_template('index.html')
@@ -51,6 +66,12 @@ def use_case_1():
     if request.method == 'POST':
         return redirect(url_for('index'))
     return render_template('use_case_1.html')
+
+@app.route('/use_case_2', methods=['GET', 'POST'])
+def use_case_2():
+    if request.method == 'POST':
+        return redirect(url_for('index'))
+    return render_template('use_case_2.html')
 
 @app.route('/pass_data', methods=['POST'])
 def pass_data():
