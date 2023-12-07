@@ -14,10 +14,12 @@ db = SQLAlchemy(app)
 class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(200), nullable=False)
+    balance = db.Column(db.Float, nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
         return '<User %r>' % self.id
+
 
 # fake data start
 me = User(username="mmorale", balance=0)
@@ -62,7 +64,8 @@ def delete(id):
 def add_user():
     if request.method == 'POST':
         username_content = request.form['content']
-        new_user = Users(content=username_content)
+        balance = float(request.form['balance'])
+        new_user = Users(content=username_content, balance=balance)
 
         try:
             db.session.add(new_user)

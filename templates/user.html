@@ -10,12 +10,14 @@
         <table>
             <tr>
                 <th>User</th>
+                <th>Balance</th>
                 <th>Date Created (UTC)</th>
                 <th>Actions</th>
             </tr>
             {% for user in users %}
                 <tr>
                     <td>{{ user.content }}</td>
+                    <td>{{ user.balance }}</td>
                     <td>{{ user.date_created.date() }}</td>
                     <td>
                         <a href="/delete/{{ user.id }}">Delete</a>
@@ -26,6 +28,8 @@
         <form action="/user" method="POST">
             <label for="username">Username:</label>
             <input type="text" name="content" id="username">
+            <label for="balance">Balance:</label>
+            <input type="number" name="balance" id="balance">
             <input type="submit" value="Add User">
         </form>
     </div>
