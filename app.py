@@ -73,8 +73,7 @@ def register():
             return 'There was an issue adding your user'
         # Once user account created, redirect them
         # to login route (created later on)
-        users = Users.query.order_by(Users.date_created).all()
-        return render_template('login.html', users=users)
+        return render_template('login.html')
         # return redirect(url_for('login'))
     # Renders sign_up template if user made a GET request
     return render_template("register.html")
@@ -102,16 +101,21 @@ def account():
     users = Users.query.order_by(Users.date_created).all()
     return render_template('account.html', users=users)
 
+@app.route("/logout")
+def logout():
+    logout_user()
+    return redirect(url_for("login"))
+
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     if request.method == 'POST':
         user = Users.query.filter_by(username=request.form.get("username_login")).first()
         # Check if the password entered is the same as the user's password
-        if login.password == request.form.get("password_login"):
+        if user.password == request.form.get("password_login"):
             # Use the login_user method to log in the user
             login_user(user)
-            return redirect(url_for('/'))
+            return render_template('index.html')
     return render_template('login.html')
 
 

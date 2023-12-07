@@ -15,9 +15,8 @@
   {% if current_user.is_authenticated %}
       <nav>
       <a href="{{ url_for('index') }}">Home</a>
-      <a href="{{ url_for('login') }}">Login</a>
-      <a href="{{ url_for('register') }}">Register</a>
       <a href="{{ url_for('account') }}">Account</a>
+      <a href="/logout">Logout</a>
   </nav>
       <h3>You are logged in</h3>
       {% else %}
