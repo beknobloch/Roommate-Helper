@@ -48,7 +48,7 @@ group = Group(userList)
 
 @app.route('/get_item_list', methods=['POST'])
 def get_item_list():
-    return json.dumps([item.get_name() for item in ledger.get_item_list()])
+    return json.dumps([repr(item) for item in ledger.get_item_list()])
 
 @app.route('/add_new_item', methods=['POST'])
 def add_new_item():
@@ -61,6 +61,24 @@ def add_new_item():
     response[2] = ben
     ledger.add_item(Item(name=response[0],price=response[1],user_who_paid=response[2]))
 
+    # returns message (not needed)
+    return jsonify({'message': 'Success'})
+
+@app.route('/handle_dropdown', methods=['POST'])
+def handle_dropdown():
+    data = request.get_json()
+    response = data['data']
+    # prints data received
+    print(f"Received data: {response}")
+
+    # finds item name from repr string
+    index1 = response.find("Name:")
+    index2 = response.find("Price")
+    name = response[index1 + len("Name:"):index2].strip()
+    for item in ledger.get_item_list():
+        if name in repr(item):
+            ledger.add_item(item)
+            break
     # returns message (not needed)
     return jsonify({'message': 'Success'})
 # use case 1 end

@@ -32,7 +32,11 @@
         <button type="button" onclick="sendFormData('add_new_item').then(receiveData('get_item_list').then(result => displayItemList(result)))">Add item to list</button>
     </form>
     <h4>Add Existing Item</h4>
-    <select name="item_dropdown" class="item_dropdown" id="itemSelect"></select>
+    <div>
+        <select name="item_dropdown" class="item_dropdown" id="itemSelect" onchange="checkValue()"></select>
+        <button id="add_existing_item" class="disabled" disabled onclick="sendDropdownData('handle_dropdown').then(receiveData('get_item_list').then(result => displayItemList(result).then(fillDropdown(result))))">Select an item from list</button>
+    </div>
+    
 
     <h4>Item List</h4>
     <ol id="itemList"></ol>
@@ -67,6 +71,28 @@
             return Promise.resolve();
         }
 
+        // used to send a dropdown menu option to python
+        function sendDropdownData(methodRoute){
+            let selectedOption = $('#itemSelect').val();
+            console.log(selectedOption)
+            $.ajax({
+                type: 'POST',
+                url: '/' + methodRoute,
+                contentType: 'application/json;charset=UTF-8',
+                data: JSON.stringify({
+                    data: selectedOption
+            }),
+            success: function(response) {
+                console.log('Data sent successfully');
+                console.log(response);
+            },
+            error: function(error) {
+                console.error('Error sending data');
+                console.error(error);  
+            }
+            });
+            return Promise.resolve()
+        }
         // receives data from python in list form. methodRoute is the name of the python method you want to call
         function receiveData(methodRoute){
             return fetch(methodRoute, {
@@ -81,16 +107,38 @@
             itemList = document.getElementById("itemList")
             itemList.innerHTML = ""
             for (let i = 0; i < list.length; i++) {
-              itemList.innerHTML += " <li> " + list[i] + " </li>"
+                let index1 = list[i].indexOf(":")
+                let index2 = list[i].indexOf("Price");
+                itemList.innerHTML += " <li> " + list[i].substring(index1+1, index2).trim() + " </li>"
             }
             fillDropdown(list)
+            return Promise.resolve()
         }
-
+        
+        // populates item dropdown with each option having the value of an item's repr but only displaying the item name to the user
         function fillDropdown(list){
             itemDropdown = document.getElementById('itemSelect');
             itemDropdown.innerHTML = "<option value=\"" + "(None)" + "\"> " + "(None)" + " </option>"
             for(let i = 0; i < list.length; i++){
-                itemDropdown.innerHTML += "<option value=\"" + list[i] + "\"> " + list[i] + " </option>"
+                let index1 = list[i].indexOf(":")
+                let index2 = list[i].indexOf("Price");
+                itemDropdown.innerHTML += "<option value=\"" + list[i] + "\"> " + list[i].substring(index1+1, index2).trim() + " </option>"
+            }
+            checkValue()
+        }
+
+        // checks if dropdown menu does not have "(None)" selected"
+        function checkValue(){
+            let button = document.getElementById("add_existing_item");
+            if (document.getElementById("itemSelect").value != "(None)") {
+                button.innerHTML = "Add item";
+                button.disabled = false;
+                button.classList.remove("disabled");
+                
+            } else {
+                button.innerHTML = "Select an item from list";
+                button.disabled = true;
+                button.classList.add("disabled");
             }
         }
         receiveData('get_item_list').then(result => displayItemList(result))
