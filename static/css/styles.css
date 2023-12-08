@@ -51,6 +51,11 @@ body {
     cursor: default;
   }
 
+  select {
+    width: 15%;
+    height: 50px;
+  }
+
   #output1,
   #output2 {
     margin-top: 20px;
