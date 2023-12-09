@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Item Page</title>
+{% endblock %}
+
+{% block body %}
+    <h1>Welcome to the Ledger</h1>
+    <div>
+        <table>
+            <tr>
+                <th>Item</th>
+                <th>Price</th>
+                <th>Actions</th>
+            </tr>
+            {% for item in items %}
+                <tr>
+                    <td>{{ item.itemName }}</td>
+                    <td>{{ item.itemPrice }}</td>
+                    <td>{{ item.date_created.date() }}</td>
+                    <td>{{ item.payerID }}</td>
+                    <td>
+                        <a href="/pay/{{ item.id }}">Pay</a>
+                        <a href="/delete/{{ item.id }}">Delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}

@@ -1,11 +1,7 @@
-import json
-from flask import Flask, render_template, request, jsonify, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-from user import User
-from item import Item
-from ledger import Ledger
 from datetime import datetime
-from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required
+from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
@@ -26,36 +22,45 @@ class Users(UserMixin, db.Model):
     password = db.Column(db.String(250), nullable=False)
     balance = db.Column(db.Float, nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
+    #items = db.relationship('Item', backref='user')
 
     def __repr__(self):
         return '<User %r>' % self.id
 
 
-# fake data start
-me = User(username="mmorale", balance=0)
-ben = User(username="bknob", balance=0)
-noah = User(username="nspina", balance=0)
+class Item(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    itemName = db.Column(db.String(200), nullable=False)
+    itemPrice = db.Column(db.Float, nullable=False)
+    payerID = db.Column(db.Integer, db.ForeignKey('users.id'))
+    date_created = db.Column(db.DateTime, default=datetime.utcnow)
 
-items = []
-for i in range(1, 10):
-    items.append(Item(name=f"me{i}", price=i, user_who_paid=me))
-ledge = Ledger(item_list=items)
-print(me)
-
-sample_dict = {
-    "name": "John Doe",
-    "age": 30,
-    "city": "Example City",
-    "email": "john.doe@example.com",
-    "is_student": False,
-    "grades": [85, 92, 78, 90]
-}
-# fake data end
+    def __repr__(self):
+        return '<Item %r>' % self.id
 
 
+@app.route('/', methods=['POST', 'GET'])
+def index():  # put application's code here
+    return render_template('index.html')
+
+
+# ------------------ LEDGER/ITEM STUFF START ------------------ #
+@app.route('/ledger', methods=['POST', 'GET'])
+def ledger():
+    return render_template('ledger.html')
+# ------------------ LEDGER/ITEM STUFF END ------------------ #
+
+
+# ------------------ ACCOUNT STUFF START ------------------ #
 @login_manager.user_loader
 def loader_user(user_id):
     return Users.query.get(user_id)
+
+
+@app.route('/account', methods=['POST', 'GET'])
+def account():
+    users = Users.query.order_by(Users.date_created).all()
+    return render_template('account.html', users=users)
 
 
 @app.route('/register', methods=["GET", "POST"])
@@ -79,34 +84,6 @@ def register():
     return render_template("register.html")
 
 
-@app.route('/', methods=['POST', 'GET'])
-def index():  # put application's code here
-    return render_template('index.html')
-
-
-@app.route('/delete/<int:id>')
-def delete(id):
-    user_to_delete = Users.query.get_or_404(id)
-
-    try:
-        db.session.delete(user_to_delete)
-        db.session.commit()
-        return redirect(url_for('account'))
-    except:
-        return "There was a problem deleting that user"
-
-
-@app.route('/account', methods=['POST', 'GET'])
-def account():
-    users = Users.query.order_by(Users.date_created).all()
-    return render_template('account.html', users=users)
-
-@app.route("/logout")
-def logout():
-    logout_user()
-    return redirect(url_for("login"))
-
-
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     if request.method == 'POST':
@@ -115,45 +92,31 @@ def login():
         if user.password == request.form.get("password_login"):
             # Use the login_user method to log in the user
             login_user(user)
-            return render_template('index.html')
+            users = Users.query.order_by(Users.date_created).all()
+            return render_template('account.html', users=users)
     return render_template('login.html')
 
 
-@app.route('/pass_data', methods=['POST'])
-def pass_data():
-    result = ""
-
-    for i in ledge.get_item_list():
-        result += f"{i}, "
-    return result
+@app.route("/logout")
+def logout():
+    logout_user()
+    return redirect(url_for("login"))
 
 
-@app.route('/pass_list', methods=['POST'])
-def pass_list():
-    return json.dumps([str(obj) for obj in items])
-
-
-@app.route('/pass_dict', methods=['POST'])
-def pass_dict():
-    return json.dumps([[key, value] for key, value in sample_dict.items()])
-
-
-@app.route('/retrieveData', methods=['POST'])
-def retrieveData():
-    data = request.get_json()
-    response = data['data']
-    # prints data received
-    print(f"Received data: {response}")
-    updateItemList(response)
-
-    # returns message (not needed)
-    return jsonify({'message': 'Success'})
-
-
-# takes js user input and uses it to create a new item and appends it to the item list
-def updateItemList(newItem):
-    items.append(Item(name=newItem[0], price=newItem[1], user_who_paid=me))
-    pass_list()
+@app.route('/delete/<int:id>')
+def delete(id):
+    user_to_delete = Users.query.get_or_404(id)
+    if current_user.is_authenticated and current_user == user_to_delete:
+        try:
+            logout_user()
+            db.session.delete(user_to_delete)
+            db.session.commit()
+            return redirect('/login')
+        except:
+            return 'There was an issue deleting that user'
+    else:
+        return "You have to log in to delete a user"
+# ------------------ ACCOUNT STUFF END ------------------ #
 
 
 # main
