@@ -50,9 +50,15 @@ user_items = db.Table('user_items',
 # ------------------ DATABASE STUFF END ------------------ #
 
 
+# ------------------ HOMEPAGE STUFF START ------------------ #
 @app.route('/', methods=['POST', 'GET'])
-def index():  # put application's code here
-    return render_template('index.html')
+def index():
+    users = Users.query.order_by(Users.date_created).all()
+    items = Items.query.order_by(Items.date_created).all()
+    return render_template('index.html', items=items, users=users)
+
+
+# ------------------ HOMEPAGE STUFF END ------------------ #
 
 
 # ------------------ LEDGER/ITEM STUFF START ------------------ #
@@ -132,16 +138,17 @@ def register():
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     if request.method == 'POST':
-        #try:
+        try:
             user = Users.query.filter_by(username=request.form.get("username_login")).first()
             # Check if the password entered is the same as the user's password
             if user.password == request.form.get("password_login"):
                 # Use the login_user method to log in the user
                 login_user(user)
                 users = Users.query.order_by(Users.date_created).all()
-                return render_template('account.html', users=users)
-        # except:
-        #     return 'There was an issue logging into your account'
+                items = Items.query.order_by(Items.date_created).all()
+                return render_template('index.html', users=users, items=items)
+        except:
+            return 'There was an issue logging into your account'
     return render_template('login.html')
 
 
