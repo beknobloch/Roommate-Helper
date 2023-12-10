@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Payment Page</title>
+{% endblock %}
+
+{% block body %}
+    <h1>Payment Page</h1>
+    
+    <h4 style="color:green">You owe {{user_to_pay.username}} {{balance}}.</h4>
+
+    <h4>You owe {{user_to_pay.username}} for the following items:</h4>
+    <table>
+        <tr>
+            <th>Item</th>
+            <th>Price</th>
+            <th>Date Created</th>
+        </tr>
+        {% for item in owe_list %}
+        <tr>
+            <td>{{ item.itemName }}</td>
+            <td>{{ item.itemPrice }}</td>
+            <td>{{ item.date_created.date() }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <br>
+
+    <h4>{{user_to_pay.username}} owes you for the following items:</h4>
+    <table>
+        <tr>
+            <th>Item</th>
+            <th>Price</th>
+            <th>Date Created</th>
+        </tr>
+        {% for item in owed_list %}
+        <tr>
+            <td>{{ item.itemName }}</td>
+            <td>{{ item.itemPrice }}</td>
+            <td>{{ item.date_created.date() }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}

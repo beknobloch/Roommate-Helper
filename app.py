@@ -171,6 +171,32 @@ def delete(id):
             return 'There was an issue deleting that user'
     else:
         return "You have to log in to delete a user"
+    
+@app.route('/pay/<int:id>')
+def pay(id):
+    owed_balance = 0.00
+
+    user_to_pay = Users.query.get_or_404(id)
+    if current_user.is_authenticated and current_user != user_to_pay:
+        try:
+            oweList = Items.query.filter_by(payerID=user_to_pay.id)
+            owedList = Items.query.filter_by(payerID=current_user.id)
+            oweList_pass = []
+            owedList_pass = []
+            for item in oweList:
+                if current_user in item.users:
+                    owed_balance += item.itemPrice
+                    oweList_pass.append(item)
+            for item in owedList:
+                if user_to_pay in item.users:
+                    owed_balance -= item.itemPrice
+                    owedList_pass.append(item)
+            
+            return render_template('payment.html', balance=owed_balance, user_to_pay=user_to_pay, owe_list=oweList_pass, owed_list=owedList_pass)
+        except:
+            return 'There was an issue loading the pay page for that user'
+    else:
+        return "You have to log in to pay another user."
 # ------------------ ACCOUNT STUFF END ------------------ #
 
 
