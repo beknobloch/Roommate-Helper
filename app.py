@@ -17,6 +17,7 @@ def loader_user(user_id):
 
 
 class Users(UserMixin, db.Model):
+    __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(250), unique=True, nullable=False)
     password = db.Column(db.String(250), nullable=False)
@@ -28,6 +29,7 @@ class Users(UserMixin, db.Model):
 
 
 class Items(db.Model):
+    __tablename__ = 'items'
     id = db.Column(db.Integer, primary_key=True)
     itemName = db.Column(db.String(200), nullable=False)
     itemPrice = db.Column(db.Float, nullable=False)

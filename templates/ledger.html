@@ -24,7 +24,7 @@
                     <!-- DON'T KNOW WHY, BUT THIS CODE DOESN'T DISPLAY THE USER WHO PAID -->
                         {% for user in users %}
                             {% if user.id == item.payerID %}
-                                {{ str(user.username) }}
+                                {{ user.username }}
                                 {{ break }}
                             {% endif %}
                         {% endfor %}
@@ -51,7 +51,7 @@
   <label for="payerID">User who Paid:</label>
   <select id="payerID" name="payerID">
       {% for user in users %}
-          <option> value={{ user.id }}>{{ user.username }}</option>
+          <option value="{{ user.id }}">{{ user.username }}</option>
       {% endfor %}
   </select>
     </div>
