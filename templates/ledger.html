@@ -11,6 +11,8 @@
             <tr>
                 <th>Item</th>
                 <th>Price</th>
+                <th>Date Created</th>
+                <th>Payer</th>
                 <th>Actions</th>
             </tr>
             {% for item in items %}
@@ -18,7 +20,15 @@
                     <td>{{ item.itemName }}</td>
                     <td>{{ item.itemPrice }}</td>
                     <td>{{ item.date_created.date() }}</td>
-                    <td>{{ item.payerID }}</td>
+                    <td>
+                    <!-- DON'T KNOW WHY, BUT THIS CODE DOESN'T DISPLAY THE USER WHO PAID -->
+                        {% for user in users %}
+                            {% if user.id == item.payerID %}
+                                {{ str(user.username) }}
+                                {{ break }}
+                            {% endif %}
+                        {% endfor %}
+                    </td>
                     <td>
                         <a href="/pay/{{ item.id }}">Pay</a>
                         <a href="/delete/{{ item.id }}">Delete</a>
@@ -27,4 +37,24 @@
             {% endfor %}
         </table>
     </div>
+
+    <form action="/addItem" method='POST'>
+    <div class="itemName">
+        <label for="itemName">Item Name:</label>
+        <input type="text" name="itemName" id="itemName"/>
+    </div>
+    <div class="itemPrice">
+        <label for="itemPrice">Item Price:</label>
+        <input type="number" name="itemPrice" id="itemPrice"/>
+    </div>
+    <div class="payerID">
+  <label for="payerID">User who Paid:</label>
+  <select id="payerID" name="payerID">
+      {% for user in users %}
+          <option> value={{ user.id }}>{{ user.username }}</option>
+      {% endfor %}
+  </select>
+    </div>
+    <input type="submit" value="Register">
+</form>
 {% endblock %}

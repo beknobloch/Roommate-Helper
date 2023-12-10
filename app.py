@@ -22,13 +22,12 @@ class Users(UserMixin, db.Model):
     password = db.Column(db.String(250), nullable=False)
     balance = db.Column(db.Float, nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
-    #items = db.relationship('Item', backref='user')
 
     def __repr__(self):
         return '<User %r>' % self.id
 
 
-class Item(db.Model):
+class Items(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     itemName = db.Column(db.String(200), nullable=False)
     itemPrice = db.Column(db.Float, nullable=False)
@@ -47,7 +46,25 @@ def index():  # put application's code here
 # ------------------ LEDGER/ITEM STUFF START ------------------ #
 @app.route('/ledger', methods=['POST', 'GET'])
 def ledger():
-    return render_template('ledger.html')
+    users = Users.query.order_by(Users.date_created).all()
+    items = Items.query.order_by(Items.date_created).all()
+    return render_template('ledger.html', users=users, items=items)
+
+
+@app.route('/addItem', methods=['POST', 'GET'])
+def add_item():
+    if request.method == 'POST':
+        new_item = Items(itemName=request.form.get('itemName'),
+                        itemPrice=request.form.get('itemPrice'),
+                        payerID=request.form.get('payerID'))
+
+        try:
+            db.session.add(new_item)
+            db.session.commit()
+        except:
+            return 'There was an issue adding your item'
+        return render_template('ledger.html')
+    return render_template("index.html")
 # ------------------ LEDGER/ITEM STUFF END ------------------ #
 
 
