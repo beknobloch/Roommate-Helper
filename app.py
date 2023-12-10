@@ -67,6 +67,18 @@ def add_item():
             return 'There was an issue adding your item'
         return render_template('ledger.html')
     return render_template("index.html")
+
+
+@app.route('/deleteItem/<int:id>')
+def delete_item(id):
+    item_to_delete = Items.query.get_or_404(id)
+    try:
+        logout_user()
+        db.session.delete(item_to_delete)
+        db.session.commit()
+        return redirect('/ledger')
+    except:
+        return 'There was an issue deleting that item'
 # ------------------ LEDGER/ITEM STUFF END ------------------ #
 
 
