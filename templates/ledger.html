@@ -13,6 +13,7 @@
                 <th>Price</th>
                 <th>Date Created</th>
                 <th>Payer</th>
+                <th>Item Users</th>
                 <th>Actions</th>
             </tr>
             {% for item in items %}
@@ -26,6 +27,11 @@
                                 {{ user.username }}
                                 {{ break }}
                             {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% for user in item.users %}
+                            {{ user.username }}
                         {% endfor %}
                     </td>
                     <td>
@@ -53,6 +59,14 @@
           <option value="{{ user.id }}">{{ user.username }}</option>
       {% endfor %}
   </select>
+    </div>
+        <div class="itemUsers">
+      <label for="itemUsers">Users who Use Item:</label>
+      <select id="itemUsers" name="itemUsers" multiple>
+          {% for user in users %}
+              <option value="{{ user.id }}">{{ user.username }}</option>
+          {% endfor %}
+      </select>
     </div>
     <input type="submit" value="Add Item">
 </form>

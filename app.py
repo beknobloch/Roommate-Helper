@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
+from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
@@ -16,18 +16,7 @@ def loader_user(user_id):
     return Users.query.get(int(user_id))
 
 
-class Users(UserMixin, db.Model):
-    __tablename__ = 'users'
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(250), unique=True, nullable=False)
-    password = db.Column(db.String(250), nullable=False)
-    balance = db.Column(db.Float, nullable=False)
-    date_created = db.Column(db.DateTime, default=datetime.utcnow)
-
-    def __repr__(self):
-        return '<User %r>' % self.id
-
-
+# ------------------ DATABASE STUFF START ------------------ #
 class Items(db.Model):
     __tablename__ = 'items'
     id = db.Column(db.Integer, primary_key=True)
@@ -38,6 +27,27 @@ class Items(db.Model):
 
     def __repr__(self):
         return '<Item %r>' % self.id
+
+
+class Users(UserMixin, db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(250), unique=True, nullable=False)
+    password = db.Column(db.String(250), nullable=False)
+    balance = db.Column(db.Float, nullable=False)
+    date_created = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Relationship declaration placed after both models are defined
+    items = db.relationship('Items', secondary='user_items', backref='users')
+
+    def __repr__(self):
+        return '<User %r>' % self.id
+
+
+user_items = db.Table('user_items',
+    db.Column('user_id', db.Integer, db.ForeignKey('users.id'), primary_key=True),
+    db.Column('item_id', db.Integer, db.ForeignKey('items.id'), primary_key=True))
+# ------------------ DATABASE STUFF END ------------------ #
 
 
 @app.route('/', methods=['POST', 'GET'])
@@ -59,7 +69,10 @@ def add_item():
         new_item = Items(itemName=request.form.get('itemName'),
                         itemPrice=request.form.get('itemPrice'),
                         payerID=request.form.get('payerID'))
-
+        selected_users_ids = request.form.getlist('itemUsers')
+        selected_users = Users.query.filter(Users.id.in_(selected_users_ids)).all()
+        for user in selected_users:
+            new_item.users.append(user)
         try:
             db.session.add(new_item)
             db.session.commit()
@@ -119,7 +132,7 @@ def register():
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     if request.method == 'POST':
-        try:
+        #try:
             user = Users.query.filter_by(username=request.form.get("username_login")).first()
             # Check if the password entered is the same as the user's password
             if user.password == request.form.get("password_login"):
@@ -127,8 +140,8 @@ def login():
                 login_user(user)
                 users = Users.query.order_by(Users.date_created).all()
                 return render_template('account.html', users=users)
-        except:
-            return 'There was an issue logging into your account'
+        # except:
+        #     return 'There was an issue logging into your account'
     return render_template('login.html')
 
 
