@@ -21,7 +21,6 @@
                     <td>{{ item.itemPrice }}</td>
                     <td>{{ item.date_created.date() }}</td>
                     <td>
-                    <!-- DON'T KNOW WHY, BUT THIS CODE DOESN'T DISPLAY THE USER WHO PAID -->
                         {% for user in users %}
                             {% if user.id == item.payerID %}
                                 {{ user.username }}
@@ -55,6 +54,6 @@
       {% endfor %}
   </select>
     </div>
-    <input type="submit" value="Register">
+    <input type="submit" value="Add Item">
 </form>
 {% endblock %}

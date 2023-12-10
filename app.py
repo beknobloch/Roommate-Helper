@@ -65,7 +65,9 @@ def add_item():
             db.session.commit()
         except:
             return 'There was an issue adding your item'
-        return render_template('ledger.html')
+        users = Users.query.order_by(Users.date_created).all()
+        items = Items.query.order_by(Items.date_created).all()
+        return render_template('ledger.html', users=users, items=items)
     return render_template("index.html")
 
 
@@ -73,7 +75,6 @@ def add_item():
 def delete_item(id):
     item_to_delete = Items.query.get_or_404(id)
     try:
-        logout_user()
         db.session.delete(item_to_delete)
         db.session.commit()
         return redirect('/ledger')
@@ -118,13 +119,16 @@ def register():
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     if request.method == 'POST':
-        user = Users.query.filter_by(username=request.form.get("username_login")).first()
-        # Check if the password entered is the same as the user's password
-        if user.password == request.form.get("password_login"):
-            # Use the login_user method to log in the user
-            login_user(user)
-            users = Users.query.order_by(Users.date_created).all()
-            return render_template('account.html', users=users)
+        try:
+            user = Users.query.filter_by(username=request.form.get("username_login")).first()
+            # Check if the password entered is the same as the user's password
+            if user.password == request.form.get("password_login"):
+                # Use the login_user method to log in the user
+                login_user(user)
+                users = Users.query.order_by(Users.date_created).all()
+                return render_template('account.html', users=users)
+        except:
+            return 'There was an issue logging into your account'
     return render_template('login.html')
 
 
