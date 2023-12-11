@@ -179,7 +179,7 @@ def pay(id):
 
     user_to_pay = Users.query.get_or_404(id)
     if current_user.is_authenticated and current_user != user_to_pay:
-        #try:
+        try:
             oweList = Items.query.filter_by(payerID=user_to_pay.id)
             oweList_pass = []
             oweAmount_pass = []
@@ -207,8 +207,8 @@ def pay(id):
             combined_owe_list = zip(oweList_pass, oweAmount_pass, oweListDate_pass, itemBuyerList_pass)
             combined_owed_list = zip(owedList_pass, owedAmount_pass, owedListDate_pass)
             return render_template('payment.html', balance=owed_balance, user_to_pay=user_to_pay, combined_owe_list=combined_owe_list, combined_owed_list=combined_owed_list, item_user_status_dict=item_user_status_dict)
-        # except:
-        #     return 'There was an issue loading the pay page for that user'
+        except:
+            return 'There was an issue loading the pay page for that user'
     else:
         return "You have to log in to pay another user."
 
@@ -246,7 +246,7 @@ def payment(id, payerID):
     if current_user.balance > amount_to_pay and not item_user_status_dict[current_user.id][user_to_pay.id]:
         user_to_pay.balance += amount_to_pay
         current_user.balance -= amount_to_pay
-        item_user_status_dict[current_user.id][user_to_pay.id] = True
+        item_user_status_dict[current_item.id][current_user.id] = True
         db.session.commit()
 
         return render_template('payment.html', user_to_pay=user_to_pay, item_user_status_dict=item_user_status_dict)

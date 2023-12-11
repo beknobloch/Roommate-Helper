@@ -22,7 +22,7 @@
         <td>{{ item.itemName }}</td>
         <td>{{ amount }}</td>
         <td>{{ date }}</td>
-        {% if item_user_status_dict[item.id][user_to_pay.id] == True %}
+        {% if item_user_status_dict[item.id][current_user.id] == True %}
         <td>Paid</td>
         {% else %}
         <td class="action-links">
