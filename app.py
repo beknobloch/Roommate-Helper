@@ -24,6 +24,7 @@ class Items(db.Model):
     itemPrice = db.Column(db.Float, nullable=False)
     payerID = db.Column(db.Integer, db.ForeignKey('users.id'))
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
+    paid = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
         return '<Item %r>' % self.id
@@ -56,8 +57,6 @@ def index():
     users = Users.query.order_by(Users.date_created).all()
     items = Items.query.order_by(Items.date_created).all()
     return render_template('index.html', items=items, users=users)
-
-
 # ------------------ HOMEPAGE STUFF END ------------------ #
 
 
@@ -123,6 +122,7 @@ def register():
                          password=request.form.get("password"))
 
         try:
+
             db.session.add(new_user)
             db.session.commit()
         except:
@@ -171,7 +171,8 @@ def delete(id):
             return 'There was an issue deleting that user'
     else:
         return "You have to log in to delete a user"
-    
+
+
 @app.route('/pay/<int:id>')
 def pay(id):
     owed_balance = 0.00
@@ -183,6 +184,7 @@ def pay(id):
             oweList_pass = []
             oweAmount_pass = []
             oweListDate_pass = []
+            itemBuyerList_pass = []
 
             for item in oweList:
                 if current_user in item.users:
@@ -190,6 +192,7 @@ def pay(id):
                     oweAmount_pass.append(item.itemPrice / len(item.users))
                     oweList_pass.append(item)
                     oweListDate_pass.append(item.date_created.date())
+                    itemBuyerList_pass.append(user_to_pay)
 
             owedList = Items.query.filter_by(payerID=current_user.id)
             owedList_pass = []
@@ -201,13 +204,54 @@ def pay(id):
                     owedAmount_pass.append(item.itemPrice / len(item.users))
                     owedList_pass.append(item)
                     owedListDate_pass.append(item.date_created.date())
-            combined_owe_list = zip(oweList_pass, oweAmount_pass, oweListDate_pass)
+            combined_owe_list = zip(oweList_pass, oweAmount_pass, oweListDate_pass, itemBuyerList_pass)
             combined_owed_list = zip(owedList_pass, owedAmount_pass, owedListDate_pass)
-            return render_template('payment.html', balance=owed_balance, user_to_pay=user_to_pay, combined_owe_list=combined_owe_list, combined_owed_list=combined_owed_list)
+            return render_template('payment.html', balance=owed_balance, user_to_pay=user_to_pay, combined_owe_list=combined_owe_list, combined_owed_list=combined_owed_list, item_user_status_dict=item_user_status_dict)
         # except:
         #     return 'There was an issue loading the pay page for that user'
     else:
         return "You have to log in to pay another user."
+
+
+item_user_status_dict = None
+
+
+def load_item_user_statuses():
+    users = Users.query.order_by(Users.date_created).all()
+    items = Items.query.order_by(Items.date_created).all()
+
+    item_user_status_dict = {}
+    for item in items:
+        user_dict = {}
+        for user in users:
+            user_dict[user.id] = False
+        item_user_status_dict[item.id] = user_dict
+    return item_user_status_dict
+
+
+@app.before_request
+def initialize():
+    global item_user_status_dict
+
+    if item_user_status_dict is None:
+        item_user_status_dict = load_item_user_statuses()
+
+
+@app.route('/payment/<int:id>/<int:payerID>')
+def payment(id, payerID):
+    current_item = Items.query.filter_by(id=id).first()
+    amount_to_pay = current_item.itemPrice / len(current_item.users)
+    user_to_pay = Users.query.filter_by(id=payerID).first()
+
+    if current_user.balance > amount_to_pay and not item_user_status_dict[current_user.id][user_to_pay.id]:
+        user_to_pay.balance += amount_to_pay
+        current_user.balance -= amount_to_pay
+        item_user_status_dict[current_user.id][user_to_pay.id] = True
+        db.session.commit()
+
+        return render_template('payment.html', user_to_pay=user_to_pay, item_user_status_dict=item_user_status_dict)
+    else:
+        return "There was an error with the payment for that user"
 # ------------------ ACCOUNT STUFF END ------------------ #
 
 

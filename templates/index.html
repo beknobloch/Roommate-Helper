@@ -7,7 +7,7 @@
 {% block body %}
 <h1>Welcome to Roommate Helper</h1>
     {% if current_user.is_authenticated %}
-        <h3>Current Items to Pay for</h3>
+        <h3>Current Items You Use</h3>
         <table>
             <tr>
                 <th>Item</th>
@@ -17,7 +17,7 @@
                 <th>Item Users</th>
             </tr>
             {% for item in items %}
-                {% if current_user in item.users and current_user.id != item.payerID%}
+                {% if current_user in item.users and current_user.id != item.payerID %}
                 <tr>
                     <td>{{ item.itemName }}</td>
                     <td>{{ item.itemPrice }}</td>

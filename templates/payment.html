@@ -7,20 +7,28 @@
 {% block body %}
     <h1>Payment Page</h1>
     
-    <h4 style="color:green">You owe {{user_to_pay.username}} {{balance}}.</h4>
+    <!--<h4 style="color:green">You owe  {# {{user_to_pay.username}} {{balance}} #}.</h4>-->
 
     <h4>You owe {{user_to_pay.username}} for the following items:</h4>
     <table>
     <tr>
         <th>Item</th>
-        <th>Price</th>
+        <th>Individual Price Owed</th>
         <th>Date Created</th>
+        <th>Actions</th>
     </tr>
-    {% for item, amount, date in combined_owe_list %}
+    {% for item, amount, date, payer in combined_owe_list %}
     <tr>
         <td>{{ item.itemName }}</td>
         <td>{{ amount }}</td>
         <td>{{ date }}</td>
+        {% if item_user_status_dict[item.id][user_to_pay.id] == True %}
+        <td>Paid</td>
+        {% else %}
+        <td class="action-links">
+            <a href="/payment/{{ item.id }}/{{ user_to_pay.id }}">Pay</a>
+        </td>
+        {% endif %}
     </tr>
     {% endfor %}
 </table>
@@ -31,7 +39,7 @@
 <table>
     <tr>
         <th>Item</th>
-        <th>Price</th>
+        <th>Individual Price Owed</th>
         <th>Date Created</th>
     </tr>
     {% for item, amount, date in combined_owed_list %}
