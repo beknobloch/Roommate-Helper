@@ -15,7 +15,6 @@
                 <th>Date Created</th>
                 <th>Payer</th>
                 <th>Item Users</th>
-                <th>Actions</th>
             </tr>
             {% for item in items %}
                 {% if current_user in item.users and current_user.id != item.payerID%}
@@ -35,10 +34,6 @@
                         {% for user in item.users %}
                             {{ user.username }}
                         {% endfor %}
-                    </td>
-                    <td>
-                        <a href="/pay/{{ item.id }}">Pay</a>
-                        <a href="/deleteItem/{{ item.id }}">Delete</a>
                     </td>
                 </tr>
 

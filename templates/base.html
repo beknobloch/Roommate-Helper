@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <!-- Meta tags -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -9,25 +9,35 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-  {% block head %}{% endblock %}
-  </head>
-  <body>
-  {% if current_user.is_authenticated %}
+    {% block head %}{% endblock %}
+</head>
+<body>
     <nav>
-      <a href="{{ url_for('index') }}">Home</a>
-      <a href="{{ url_for('account') }}">Account</a>
-      <a href="{{ url_for('ledger') }}">Ledger</a>
-      <a href="/logout">Logout</a>
+        <div class="logo">
+            <!-- Your logo or site title -->
+        </div>
+
+        {% if current_user.is_authenticated %}
+            <div>
+                <a href="{{ url_for('index') }}">Home</a>
+                <a href="{{ url_for('account') }}">Account</a>
+                <a href="{{ url_for('ledger') }}">Ledger</a>
+                <a href="/logout">Logout</a>
+            </div>
+            <div class="logged-in-message">
+                    Logged in as: {{ current_user.username }}
+            </div>
+        {% else %}
+            <div>
+                <a href="{{ url_for('index') }}">Home</a>
+                <a href="{{ url_for('login') }}">Login</a>
+                <a href="{{ url_for('register') }}">Register</a>
+            </div>
+            <div class="logged-in-message">
+                    Not logged in
+            </div>
+        {% endif %}
     </nav>
-    <h3>You are logged in as "{{ current_user.username }}"</h3>
-  {% else %}
-    <nav>
-      <a href="{{ url_for('index') }}">Home</a>
-      <a href="{{ url_for('login') }}">Login</a>
-      <a href="{{ url_for('register') }}">Register</a>
-    </nav>
-    <h3>You are not logged in</h3>
-  {% endif %}
-  {% block body %}{% endblock %}
-  </body>
+    <div class="main-container">{% block body %}{% endblock %}</div>
+</body>
 </html>

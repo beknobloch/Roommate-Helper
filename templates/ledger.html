@@ -34,8 +34,7 @@
                             {{ user.username }}
                         {% endfor %}
                     </td>
-                    <td>
-                        <a href="/pay/{{ item.id }}">Pay</a>
+                    <td class="action-links">
                         <a href="/deleteItem/{{ item.id }}">Delete</a>
                     </td>
                 </tr>
@@ -43,31 +42,32 @@
         </table>
     </div>
 
-    <form action="/addItem" method='POST'>
-    <div class="itemName">
+<form action="/addItem" method='POST' class="custom-form">
+<h2>Add Item</h2>
+    <div class="form-group">
         <label for="itemName">Item Name:</label>
-        <input type="text" name="itemName" id="itemName"/>
+        <input type="text" name="itemName" id="itemName" class="form-control"/>
     </div>
-    <div class="itemPrice">
+    <div class="form-group">
         <label for="itemPrice">Item Price:</label>
-        <input type="number" name="itemPrice" id="itemPrice"/>
+        <input type="number" name="itemPrice" id="itemPrice" class="form-control"/>
     </div>
-    <div class="payerID">
-  <label for="payerID">User who Paid:</label>
-  <select id="payerID" name="payerID">
-      {% for user in users %}
-          <option value="{{ user.id }}">{{ user.username }}</option>
-      {% endfor %}
-  </select>
+    <div class="form-group">
+        <label for="payerID">User who Paid:</label>
+        <select id="payerID" name="payerID" class="form-control">
+            {% for user in users %}
+                <option value="{{ user.id }}">{{ user.username }}</option>
+            {% endfor %}
+        </select>
     </div>
-        <div class="itemUsers">
-      <label for="itemUsers">Users who Use Item:</label>
-      <select id="itemUsers" name="itemUsers" multiple>
-          {% for user in users %}
-              <option value="{{ user.id }}">{{ user.username }}</option>
-          {% endfor %}
-      </select>
+    <div class="form-group">
+        <label for="itemUsers">Users who Use Item:</label>
+        <select id="itemUsers" name="itemUsers" multiple class="form-control">
+            {% for user in users %}
+                <option value="{{ user.id }}">{{ user.username }}</option>
+            {% endfor %}
+        </select>
     </div>
-    <input type="submit" value="Add Item">
+    <input type="submit" value="Add Item" class="btn btn-primary">
 </form>
 {% endblock %}

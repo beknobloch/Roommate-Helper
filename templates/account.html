@@ -20,11 +20,11 @@
                     <td>{{ user.balance }}</td>
                     <td>{{ user.date_created.date() }}</td>
                     {% if user == current_user %}
-                    <td>
+                    <td class="action-links">
                         <a href="/delete/{{ user.id }}">DELETE Account</a>
                     </td>
                     {% else: %}
-                    <td>
+                    <td class="action-links">
                         <a href="/pay/{{ user.id }}">Pay Account</a>
                     </td>
                     {% endif %}
