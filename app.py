@@ -178,23 +178,34 @@ def pay(id):
 
     user_to_pay = Users.query.get_or_404(id)
     if current_user.is_authenticated and current_user != user_to_pay:
-        try:
+        #try:
             oweList = Items.query.filter_by(payerID=user_to_pay.id)
-            owedList = Items.query.filter_by(payerID=current_user.id)
             oweList_pass = []
-            owedList_pass = []
+            oweAmount_pass = []
+            oweListDate_pass = []
+
             for item in oweList:
                 if current_user in item.users:
-                    owed_balance += item.itemPrice
+                    owed_balance += item.itemPrice / len(item.users)
+                    oweAmount_pass.append(item.itemPrice / len(item.users))
                     oweList_pass.append(item)
+                    oweListDate_pass.append(item.date_created.date())
+
+            owedList = Items.query.filter_by(payerID=current_user.id)
+            owedList_pass = []
+            owedAmount_pass = []
+            owedListDate_pass = []
             for item in owedList:
                 if user_to_pay in item.users:
-                    owed_balance -= item.itemPrice
+                    owed_balance -= item.itemPrice / len(item.users)
+                    owedAmount_pass.append(item.itemPrice / len(item.users))
                     owedList_pass.append(item)
-            
-            return render_template('payment.html', balance=owed_balance, user_to_pay=user_to_pay, owe_list=oweList_pass, owed_list=owedList_pass)
-        except:
-            return 'There was an issue loading the pay page for that user'
+                    owedListDate_pass.append(item.date_created.date())
+            combined_owe_list = zip(oweList_pass, oweAmount_pass, oweListDate_pass)
+            combined_owed_list = zip(owedList_pass, owedAmount_pass, owedListDate_pass)
+            return render_template('payment.html', balance=owed_balance, user_to_pay=user_to_pay, combined_owe_list=combined_owe_list, combined_owed_list=combined_owed_list)
+        # except:
+        #     return 'There was an issue loading the pay page for that user'
     else:
         return "You have to log in to pay another user."
 # ------------------ ACCOUNT STUFF END ------------------ #

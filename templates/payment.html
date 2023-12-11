@@ -11,36 +11,36 @@
 
     <h4>You owe {{user_to_pay.username}} for the following items:</h4>
     <table>
-        <tr>
-            <th>Item</th>
-            <th>Price</th>
-            <th>Date Created</th>
-        </tr>
-        {% for item in owe_list %}
-        <tr>
-            <td>{{ item.itemName }}</td>
-            <td>{{ item.itemPrice }}</td>
-            <td>{{ item.date_created.date() }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+    <tr>
+        <th>Item</th>
+        <th>Price</th>
+        <th>Date Created</th>
+    </tr>
+    {% for item, amount, date in combined_owe_list %}
+    <tr>
+        <td>{{ item.itemName }}</td>
+        <td>{{ amount }}</td>
+        <td>{{ date }}</td>
+    </tr>
+    {% endfor %}
+</table>
 
-    <br>
+<br>
 
-    <h4>{{user_to_pay.username}} owes you for the following items:</h4>
-    <table>
-        <tr>
-            <th>Item</th>
-            <th>Price</th>
-            <th>Date Created</th>
-        </tr>
-        {% for item in owed_list %}
-        <tr>
-            <td>{{ item.itemName }}</td>
-            <td>{{ item.itemPrice }}</td>
-            <td>{{ item.date_created.date() }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+<h4>{{user_to_pay.username}} owes you for the following items:</h4>
+<table>
+    <tr>
+        <th>Item</th>
+        <th>Price</th>
+        <th>Date Created</th>
+    </tr>
+    {% for item, amount, date in combined_owed_list %}
+    <tr>
+        <td>{{ item.itemName }}</td>
+        <td>{{ amount }}</td>
+        <td>{{ date }}</td>
+    </tr>
+    {% endfor %}
+</table>
 
 {% endblock %}
