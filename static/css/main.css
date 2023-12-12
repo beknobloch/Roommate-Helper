@@ -1,12 +1,16 @@
 body {
             background-color: #f8f9fa; /* Optional: Adding a light background color */
             padding: 20px; /* Optional: Adjusting overall padding */
+            text-align: center;
         }
 
         .main-container {
             background-color: #EED7C5; /* Box background color */
             padding: 20px; /* Padding inside the box */
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Optional: Adding a shadow */
+            display:flex;
+            justify-content:center;
+            flex-wrap: wrap;
         }
 
       h1 {
@@ -17,6 +21,7 @@ body {
           letter-spacing: -1px;
           line-height: 1;
           text-align: center;
+          width: 100%;
       }
       h2 {
           text-align: center;
