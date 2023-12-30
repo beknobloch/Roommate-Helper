@@ -85,13 +85,11 @@ def add_item():
             return 'There was an issue adding your item'
         users = Users.query.order_by(Users.date_created).all()
         items = Items.query.order_by(Items.date_created).all()
-        print(f"Items: {items}")
 
         user_dict = {}
         for user in selected_users_ids:
             user_dict[user.id] = False
         item_user_status_dict[items[-1].id] = user_dict
-        print(f"Item Dict: {item_user_status_dict}")
 
         return render_template('ledger.html', users=users, items=items)
     return render_template("index.html")
@@ -100,6 +98,7 @@ def add_item():
 @app.route('/deleteItem/<int:id>')
 def delete_item(id):
     item_to_delete = Items.query.get_or_404(id)
+    item_user_status_dict.pop(item_to_delete.id)
     try:
         db.session.delete(item_to_delete)
         db.session.commit()
