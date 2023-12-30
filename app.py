@@ -74,9 +74,9 @@ def add_item():
         new_item = Items(itemName=request.form.get('itemName'),
                         itemPrice=request.form.get('itemPrice'),
                         payerID=request.form.get('payerID'))
-        selected_users_ids = request.form.getlist('itemUsers')
-        selected_users = Users.query.filter(Users.id.in_(selected_users_ids)).all()
-        for user in selected_users:
+        selected_users = request.form.getlist('itemUsers')
+        selected_users_ids = Users.query.filter(Users.id.in_(selected_users)).all()
+        for user in selected_users_ids:
             new_item.users.append(user)
         try:
             db.session.add(new_item)
@@ -85,6 +85,14 @@ def add_item():
             return 'There was an issue adding your item'
         users = Users.query.order_by(Users.date_created).all()
         items = Items.query.order_by(Items.date_created).all()
+        print(f"Items: {items}")
+
+        user_dict = {}
+        for user in selected_users_ids:
+            user_dict[user.id] = False
+        item_user_status_dict[items[-1].id] = user_dict
+        print(f"Item Dict: {item_user_status_dict}")
+
         return render_template('ledger.html', users=users, items=items)
     return render_template("index.html")
 
