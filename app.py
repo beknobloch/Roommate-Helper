@@ -230,7 +230,7 @@ def load_item_user_statuses():
     item_user_status_dict = {}
     for item in items:
         user_dict = {}
-        for user in users:
+        for user in item.users:
             user_dict[user.id] = False
         item_user_status_dict[item.id] = user_dict
     return item_user_status_dict
