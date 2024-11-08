@@ -224,7 +224,6 @@ item_user_status_dict = None
 
 
 def load_item_user_statuses():
-    users = Users.query.order_by(Users.date_created).all()
     items = Items.query.order_by(Items.date_created).all()
 
     item_user_status_dict = {}
