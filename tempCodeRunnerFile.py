@@ -1,1 +1,0 @@
-return render_template('payment.html', balance=owed_balance, user_to_pay=user_to_pay)

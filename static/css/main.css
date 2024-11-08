@@ -1,4 +1,8 @@
-body {
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+    body {
             background-color: #f8f9fa; /* Optional: Adding a light background color */
             padding: 20px; /* Optional: Adjusting overall padding */
             text-align: center;
