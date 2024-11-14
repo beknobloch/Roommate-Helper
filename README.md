@@ -2,7 +2,7 @@
 
 # As one of several roommates in an apartment, the issue of who buys what and for whom quickly becomes sticky and intractable. As our ad hoc solutions quickly became unmanageable, we thought we'd develop an application that we could actually use to solve this surprisingly complex payment attribution problem. The Roommate Helper app solves this problem. Several images are provided below to explain the final product. See the [Project Report](https://www.overleaf.com/read/wxqgkqgsfrzv##d96ac0) for a more detailed overview of this project.
 
-# The Home Page shows the items that a user owes moeny for. 
+# The Home Page shows the items that a user owes money for. 
 <img width="1402" alt="SSW345_FinalReport_Home" src="https://github.com/beknobloch/ssw345_FinalProject/assets/142749402/e473867f-e35a-4dba-bf99-df50b416db6a">
 
 # The Ledger Page shows all items in your group including who paid for the item, when the item was bought, and how much it was bought for. This page also allows for a user to add items to the ledger. 
