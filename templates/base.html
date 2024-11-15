@@ -19,22 +19,21 @@
 
         {% if current_user.is_authenticated %}
             <div>
-                <a href="{{ url_for('index') }}">Home</a>
-                <a href="{{ url_for('account') }}">Account</a>
-                <a href="{{ url_for('ledger') }}">Ledger</a>
-                <a href="/logout">Logout</a>
+                <a href="{{ url_for('homepage.index') }}">Home</a>
+                <a href="{{ url_for('account.account') }}">Account</a>
+                <a href="{{ url_for('ledger.ledger') }}">Ledger</a>
+                <a href="{{ url_for('account.account_logout') }}">Logout</a>
             </div>
             <div class="logged-in-message">
                     Logged in as: {{ current_user.username }}
             </div>
         {% else %}
             <div>
-                <a href="{{ url_for('index') }}">Home</a>
-                <a href="{{ url_for('login') }}">Login</a>
-                <a href="{{ url_for('register') }}">Register</a>
+                <a href="{{ url_for('homepage.index') }}">Home</a>
             </div>
             <div class="logged-in-message">
-                    Not logged in
+                    <a href="{{ url_for('account.login') }}">Login</a>
+                    <a href="{{ url_for('account.register') }}">Register</a>
             </div>
         {% endif %}
     </nav>
