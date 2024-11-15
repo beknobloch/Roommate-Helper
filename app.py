@@ -1,4 +1,4 @@
-from app import create_app, db, login_manager
+from app import create_app, db
 from app.routes.ledger import initialize_item_user_status_dict
 
 app = create_app()
