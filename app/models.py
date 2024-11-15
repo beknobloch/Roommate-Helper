@@ -1,6 +1,8 @@
-from . import db
 from flask_login import UserMixin
 from datetime import datetime
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
 
 class Items(db.Model):
     __tablename__ = 'items'

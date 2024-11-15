@@ -1,10 +1,9 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+from .models import db
 from flask_login import LoginManager
 import redis
 from .config import Config
 
-db = SQLAlchemy()
 login_manager = LoginManager()
 cache = None  # Initialized after app is created
 
@@ -35,5 +34,5 @@ def create_app():
 
 @login_manager.user_loader
 def loader_user(user_id):
-    from app.models import Users
+    from .models import Users
     return Users.query.get(int(user_id))
