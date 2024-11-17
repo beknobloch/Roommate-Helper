@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for
 from flask_login import login_user, logout_user, current_user
 from ..models import Users, db, Items
 from app.routes.ledger import item_user_status_dict
+import bcrypt
 
 account_bp = Blueprint('account', __name__, template_folder='../../templates')
 
@@ -11,7 +12,10 @@ def login():
         try:
             user = Users.query.filter_by(username=request.form.get("username_login")).first()
             # Check if the password entered is the same as the user's password
-            if user.password == request.form.get("password_login"):
+            entered_password_bytes = request.form.get("password_login").encode('utf-8')
+            passwords_match = bcrypt.checkpw(entered_password_bytes, user.password) 
+
+            if passwords_match:
                 # Use the login_user method to log in the user
                 login_user(user)
                 users = Users.query.order_by(Users.date_created).all()
@@ -30,9 +34,12 @@ def account_logout():
 def register():
     # If the user made a POST request, create a new user
     if request.method == "POST":
+        password_bytes = request.form.get("password").encode('utf-8') 
+        password_hash = bcrypt.hashpw(password_bytes, bcrypt.gensalt())
+
         new_user = Users(balance=float(request.form.get("balance")),
                          username=request.form.get("username"),
-                         password=request.form.get("password"))
+                         password=password_hash)
 
         try:
 
