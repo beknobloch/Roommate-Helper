@@ -12,7 +12,8 @@ services:
       - .:/code
     depends_on:
       - redis
-    command: flask run --debug
+    command: >
+      sh -c "flask db upgrade && flask run --debug"
 
   redis:
     image: redis:alpine
