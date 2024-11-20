@@ -5,50 +5,65 @@
 {% endblock %}
 
 {% block body %}
-    <h1>Payment Page</h1>
-    
-    <!--<h4 style="color:green">You owe  {# {{user_to_pay.username}} {{balance}} #}.</h4>-->
+<h1>Payment Page</h1>
 
-    <h4>You owe {{user_to_pay.username}} for the following items:</h4>
-    <table>
-    <tr>
-        <th>Item</th>
-        <th>Individual Price Owed</th>
-        <th>Date Created</th>
-        <th>Actions</th>
-    </tr>
-    {% for item, amount, date, payer in combined_owe_list %}
-    <tr>
-        <td>{{ item.itemName }}</td>
-        <td>{{ amount }}</td>
-        <td>{{ date }}</td>
-        {% if item_user_status_dict[item.id][current_user.id] == True %}
-        <td>Paid</td>
-        {% else %}
-        <td class="action-links">
-            <a href="/payment/{{ item.id }}/{{ user_to_pay.id }}">Pay</a>
-        </td>
-        {% endif %}
-    </tr>
-    {% endfor %}
+<!-- Display total balance -->
+<h4 style="color: {{ 'green' if balance >= 0 else 'red' }}">
+    {{ "You owe $" + ('%.2f' | format(balance)) if balance >= 0 else "You owe $" + ('%.2f' | format(-balance)) }}
+</h4>
+
+<!-- Items the current user owes -->
+<h4>You owe {{ user_to_pay.username }} for the following items:</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Item</th>
+            <th>Individual Price Owed</th>
+            <th>Date Created</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entry in owe_list %}
+        <tr>
+            <td>{{ entry.item.itemName }}</td>
+            <td>${{ '%.2f' | format(entry.amount) }}</td>
+            <td>{{ entry.date }}</td>
+                {% if entry.item.user_items[0].paid %}
+                    <td>
+                        <span style="color: green;">Paid</span>
+                    </td>
+                {% else %}
+                    <td class="action-links">
+                        <a href="/payment/{{ entry.item.id }}">Pay</a>
+                    </td>
+                {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
 </table>
 
 <br>
 
-<h4>{{user_to_pay.username}} owes you for the following items:</h4>
+<!-- Items the other user owes the current user -->
+<h4>{{ user_to_pay.username }} owes you for the following items:</h4>
 <table>
-    <tr>
-        <th>Item</th>
-        <th>Individual Price Owed</th>
-        <th>Date Created</th>
-    </tr>
-    {% for item, amount, date in combined_owed_list %}
-    <tr>
-        <td>{{ item.itemName }}</td>
-        <td>{{ amount }}</td>
-        <td>{{ date }}</td>
-    </tr>
-    {% endfor %}
+    <thead>
+        <tr>
+            <th>Item</th>
+            <th>Individual Price Owed</th>
+            <th>Date Created</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entry in owed_list %}
+        <tr>
+            <td>{{ entry.item.itemName }}</td>
+            <td>${{ '%.2f' | format(entry.amount) }}</td>
+            <td>{{ entry.date }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
 </table>
 
 {% endblock %}

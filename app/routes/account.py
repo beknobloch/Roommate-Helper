@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from flask_login import login_user, logout_user, current_user
-from ..models import Users, db, Items
-from app.routes.ledger import item_user_status_dict
+from ..models import Users, db, Items, UserItem
 import bcrypt
 
 account_bp = Blueprint('account', __name__, template_folder='../../templates')
@@ -21,8 +20,8 @@ def login():
                 users = Users.query.order_by(Users.date_created).all()
                 items = Items.query.order_by(Items.date_created).all()
                 return render_template('index.html', users=users, items=items)
-        except:
-            return 'There was an issue logging into your account'
+        except Exception as e:
+            return f'There was an issue logging into your account: {str(e)}'
     return render_template('login.html')
 
 @account_bp.route('/account_logout')
@@ -64,50 +63,97 @@ def delete(id):
     user_to_delete = Users.query.get_or_404(id)
     if current_user.is_authenticated and current_user == user_to_delete:
         try:
+            # Log out the user
             logout_user()
+
+            # Delete all associated UserItem entries
+            UserItem.query.filter_by(user_id=user_to_delete.id).delete()
+
+            # Delete the user record
             db.session.delete(user_to_delete)
             db.session.commit()
+
             return redirect('/login')
-        except:
-            return 'There was an issue deleting that user'
+        except Exception as e:
+            db.session.rollback()  # Rollback in case of an error
+            return f'There was an issue deleting the user: {str(e)}'
     else:
-        return "You have to log in to delete a user"
+        return "You must be logged in and own this account to delete it."
 
 @account_bp.route('/pay/<int:id>')
 def pay(id):
-    owed_balance = 0.00
+    if not current_user.is_authenticated:
+        return "You must be logged in to pay another user."
 
     user_to_pay = Users.query.get_or_404(id)
-    if current_user.is_authenticated and current_user != user_to_pay:
-        try:
-            oweList = Items.query.filter_by(payerID=user_to_pay.id)
-            oweList_pass = []
-            oweAmount_pass = []
-            oweListDate_pass = []
-            itemBuyerList_pass = []
+    if current_user == user_to_pay:
+        return "You cannot pay yourself."
 
-            for item in oweList:
-                if current_user in item.users:
-                    owed_balance += item.itemPrice / len(item.users)
-                    oweAmount_pass.append(item.itemPrice / len(item.users))
-                    oweList_pass.append(item)
-                    oweListDate_pass.append(item.date_created.date())
-                    itemBuyerList_pass.append(user_to_pay)
+    try:
+        # Calculate amounts owed by current_user to user_to_pay
+        owe_items = (
+            db.session.query(UserItem, Items)
+            .join(Items, UserItem.item_id == Items.id)
+            .filter(UserItem.user_id == current_user.id, Items.payerID == user_to_pay.id, UserItem.paid == False)
+            .all()
+        )
 
-            owedList = Items.query.filter_by(payerID=current_user.id)
-            owedList_pass = []
-            owedAmount_pass = []
-            owedListDate_pass = []
-            for item in owedList:
-                if user_to_pay in item.users:
-                    owed_balance -= item.itemPrice / len(item.users)
-                    owedAmount_pass.append(item.itemPrice / len(item.users))
-                    owedList_pass.append(item)
-                    owedListDate_pass.append(item.date_created.date())
-            combined_owe_list = zip(oweList_pass, oweAmount_pass, oweListDate_pass, itemBuyerList_pass)
-            combined_owed_list = zip(owedList_pass, owedAmount_pass, owedListDate_pass)
-            return render_template('payment.html', balance=owed_balance, user_to_pay=user_to_pay, combined_owe_list=combined_owe_list, combined_owed_list=combined_owed_list, item_user_status_dict=item_user_status_dict)
-        except:
-            return 'There was an issue loading the pay page for that user'
-    else:
-        return "You have to log in to pay another user."
+        owe_list = []
+        owed_balance = 0.0
+        for user_item, item in owe_items:
+            share = item.itemPrice / len(item.user_items)  # Split price among all users
+            owed_balance += share
+            owe_list.append({
+                "item": item,
+                "amount": share,
+                "date": item.date_created.date(),
+                "buyer": user_to_pay.username,
+            })
+
+        # Calculate amounts owed by user_to_pay to current_user
+        owed_items = (
+            db.session.query(UserItem, Items)
+            .join(Items, UserItem.item_id == Items.id)
+            .filter(UserItem.user_id == user_to_pay.id, Items.payerID == current_user.id, UserItem.paid == False)
+            .all()
+        )
+
+        owed_list = []
+        for user_item, item in owed_items:
+            share = item.itemPrice / len(item.user_items)  # Split price among all users
+            owed_balance -= share
+            owed_list.append({
+                "item": item,
+                "amount": share,
+                "date": item.date_created.date(),
+            })
+
+        return render_template(
+            'payment.html',
+            balance=owed_balance,
+            user_to_pay=user_to_pay,
+            owe_list=owe_list,
+            owed_list=owed_list,
+        )
+    except Exception as e:
+        return f'There was an issue loading the payment page: {str(e)}'
+
+@account_bp.route('/payment/<int:item_id>', methods=['POST', 'GET'])
+def process_payment(item_id):
+    if not current_user.is_authenticated:
+        return redirect('/login')
+
+    item = Items.query.get_or_404(item_id)
+    user_item = UserItem.query.filter_by(user_id=current_user.id, item_id=item_id).first()
+
+    if not user_item or user_item.paid:
+        return "Payment already made or not allowed.", 403
+
+    try:
+        # Mark the item as paid
+        user_item.paid = True
+        db.session.commit()
+        return redirect('/ledger')  # Redirect to the ledger or another appropriate page
+    except Exception as e:
+        db.session.rollback()
+        return f"Error processing payment: {str(e)}", 500

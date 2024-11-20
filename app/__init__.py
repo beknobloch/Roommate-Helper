@@ -3,10 +3,11 @@ from .models import db
 from flask_login import LoginManager
 import redis
 from .config import Config
+from flask_migrate import Migrate
 
 login_manager = LoginManager()
 cache = None  # Initialized after app is created
-
+migrate = Migrate()
 
 def create_app():
     app = Flask(
@@ -16,6 +17,7 @@ def create_app():
     )
     app.config.from_object(Config)
     db.init_app(app)
+    migrate.init_app(app, db)
     login_manager.init_app(app)
 
     global cache
