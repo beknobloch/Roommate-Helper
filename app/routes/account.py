@@ -138,21 +138,29 @@ def pay(id):
     except Exception as e:
         return f'There was an issue loading the payment page: {str(e)}'
 
-@account_bp.route('/payment/<int:item_id>', methods=['POST', 'GET'])
-def process_payment(item_id):
+@account_bp.route('/payment/<int:item_id>/<int:user_to_pay_id>', methods=['POST', 'GET'])
+def process_payment(item_id, user_to_pay_id):
     if not current_user.is_authenticated:
         return redirect('/login')
 
     item = Items.query.get_or_404(item_id)
     user_item = UserItem.query.filter_by(user_id=current_user.id, item_id=item_id).first()
-
+    user_to_pay = Users.query.get_or_404(user_to_pay_id)
     if not user_item or user_item.paid:
         return "Payment already made or not allowed.", 403
 
     try:
-        # Mark the item as paid
-        user_item.paid = True
-        db.session.commit()
+        # Calculate the amount to pay based on the number of users sharing the item
+        amount_to_pay = item.itemPrice / len(item.users)
+        if current_user.balance >= amount_to_pay and user_item and not user_item.paid:
+            # Process the payment
+            user_to_pay.balance += amount_to_pay
+            current_user.balance -= amount_to_pay
+            user_item.paid = True
+
+            # Commit the changes to the database
+            db.session.commit()
+
         return redirect('/ledger')  # Redirect to the ledger or another appropriate page
     except Exception as e:
         db.session.rollback()

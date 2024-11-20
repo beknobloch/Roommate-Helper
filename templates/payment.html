@@ -35,7 +35,7 @@
                     </td>
                 {% else %}
                     <td class="action-links">
-                        <a href="/payment/{{ entry.item.id }}">Pay</a>
+                        <a href="/payment/{{ entry.item.id }}/{{ user_to_pay.id }}">Pay</a>
                     </td>
                 {% endif %}
         </tr>
