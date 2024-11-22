@@ -6,22 +6,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 {% endblock %}
 
-
 {% block body %}
 <h1>Create an account</h1>
-<form action="/register" method='POST'>
+<form action="/register" method="POST">
     <div class="username">
         <label for="username">Username:</label>
-        <input type="text" name="username" id="username"/>
+        <input type="text" name="username" id="username" required />
     </div>
     <div class="password">
         <label for="password">Password:</label>
-        <input type="text" name="password" id="password"/>
+        <input type="password" name="password" id="password" required />
     </div>
     <div class="balance">
         <label for="balance">Balance:</label>
-        <input type="number" name="balance" id="balance">
+        <input type="number" name="balance" id="balance" required min="0">
     </div>
     <button type="submit">Register</button>
 </form>
+{% if error %}
+    <p style="color: red;">{{ error }}</p>
+{% endif %}
 {% endblock %}

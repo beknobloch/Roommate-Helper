@@ -31,26 +31,48 @@ def account_logout():
 
 @account_bp.route('/register', methods=['GET', 'POST'])
 def register():
-    # If the user made a POST request, create a new user
     if request.method == "POST":
-        password_bytes = request.form.get("password").encode('utf-8') 
+        username = request.form.get("username").strip()
+        password = request.form.get("password").strip()
+        balance = request.form.get("balance")
+
+        if username == password: #username is not the same as password
+            return render_template("register.html", error="Username and password cannot be the same.")
+
+        if Users.query.filter_by(username=username).first(): #no duplicate usernames
+            return render_template("register.html", error="Username already exists.")
+
+        # password validation
+        if len(password) < 8:
+            return render_template("register.html", error="Password must be at least 8 characters long.")
+        if not any(char.isdigit() for char in password):
+            return render_template("register.html", error="Password must contain at least one number.")
+        if not any(char.isalpha() for char in password):
+            return render_template("register.html", error="Password must contain at least one letter.")
+        if not any(char.isupper() for char in password):
+            return render_template("register.html", error="Password must contain at least one uppercase letter.")
+        if not any(char.islower() for char in password):
+            return render_template("register.html", error="Password must contain at least one lowercase letter.")
+        if not any(char in "!@#$%^&*()-_=+<>?/" for char in password):
+            return render_template("register.html", error="Password must contain at least one special character (example: !@#$%^&*)")
+
+        password_bytes = password.encode('utf-8') #hash password
         password_hash = bcrypt.hashpw(password_bytes, bcrypt.gensalt())
 
-        new_user = Users(balance=float(request.form.get("balance")),
-                         username=request.form.get("username"),
-                         password=password_hash)
-
         try:
-
+            new_user = Users( #create new user and save hashed password
+                username=username,
+                password=password_hash,
+                balance=float(balance) if balance else 0.0
+            )
             db.session.add(new_user)
             db.session.commit()
-        except:
-            return 'There was an issue adding your user'
-        # Once user account created, redirect them
-        # to login route (created later on)
-        return render_template('login.html')
-        # return redirect(url_for('login'))
-    # Renders sign_up template if user made a GET request
+
+            return redirect(url_for('account.login'))
+        except Exception as e:
+            db.session.rollback()
+            return render_template("register.html", error=f"There was an issue creating your account: {str(e)}")
+
     return render_template("register.html")
 
 @account_bp.route('/account', methods=['POST', 'GET'])
