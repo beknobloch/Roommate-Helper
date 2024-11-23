@@ -29,7 +29,7 @@ class Items(db.Model):
     user_items = db.relationship('UserItem', back_populates='item', cascade='all, delete-orphan')
 
     # To access users through the association
-    users = db.relationship('Users', secondary='user_items', back_populates='items')
+    users = db.relationship('Users', secondary='user_items', back_populates='items', overlaps='user_items')
 
     def __repr__(self):
         return '<Item %r>' % self.id
@@ -47,7 +47,7 @@ class Users(UserMixin, db.Model):
     user_items = db.relationship('UserItem', back_populates='user', cascade='all, delete-orphan')
 
     # To access items through the association
-    items = db.relationship('Items', secondary='user_items', back_populates='users')
+    items = db.relationship('Items', secondary='user_items', back_populates='users', overlaps='user_items')
 
 def __repr__(self):
         return '<User %r>' % self.id
