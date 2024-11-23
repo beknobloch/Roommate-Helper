@@ -1,28 +1,39 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from flask_login import login_user, logout_user, current_user
 from ..models import Users, db, Items, UserItem
+from app.forms import LoginForm, RegisterForm
 import bcrypt
 
 account_bp = Blueprint('account', __name__, template_folder='../../templates')
 
 @account_bp.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
+    # Uses FlaskForm instead of html forms for CSRF protection
+    form = LoginForm()
+    if form.validate_on_submit():
         try:
-            user = Users.query.filter_by(username=request.form.get("username_login")).first()
-            # Check if the password entered is the same as the user's password
-            entered_password_bytes = request.form.get("password_login").encode('utf-8')
-            passwords_match = bcrypt.checkpw(entered_password_bytes, user.password) 
+            # Get the username and password from the form
+            # Data retrieval from FlaskForms is different from getting data from html forms
+            username = form.username.data
+            password = form.password.data
 
-            if passwords_match:
-                # Use the login_user method to log in the user
-                login_user(user)
-                users = Users.query.order_by(Users.date_created).all()
-                items = Items.query.order_by(Items.date_created).all()
-                return render_template('index.html', users=users, items=items)
+            # Query the user from the database
+            user = Users.query.filter_by(username=username).first()
+
+            if user:
+                # Check the password
+                passwords_match = bcrypt.checkpw(password.encode('utf-8'), user.password)
+
+                if passwords_match:
+                    # Log in the user
+                    login_user(user)
+                    users = Users.query.order_by(Users.date_created).all()
+                    items = Items.query.order_by(Items.date_created).all()
+                    return render_template('index.html', users=users, items=items)
+
         except Exception as e:
             return f'There was an issue logging into your account: {str(e)}'
-    return render_template('login.html')
+    return render_template('login.html', form=form)
 
 @account_bp.route('/account_logout')
 def account_logout():
@@ -31,30 +42,31 @@ def account_logout():
 
 @account_bp.route('/register', methods=['GET', 'POST'])
 def register():
-    if request.method == "POST":
-        username = request.form.get("username").strip()
-        password = request.form.get("password").strip()
-        balance = request.form.get("balance")
+    form = RegisterForm()
+    if form.validate_on_submit():
+        username = form.username.data.strip()
+        password = form.password.data.strip()
+        balance = form.balance.data
 
         if username == password: #username is not the same as password
-            return render_template("register.html", error="Username and password cannot be the same.")
+            return render_template("register.html", form=form, error="Username and password cannot be the same.")
 
         if Users.query.filter_by(username=username).first(): #no duplicate usernames
-            return render_template("register.html", error="Username already exists.")
+            return render_template("register.html", form=form, error="Username already exists.")
 
         # password validation
         if len(password) < 8:
-            return render_template("register.html", error="Password must be at least 8 characters long.")
+            return render_template("register.html", form=form, error="Password must be at least 8 characters long.")
         if not any(char.isdigit() for char in password):
-            return render_template("register.html", error="Password must contain at least one number.")
+            return render_template("register.html", form=form, error="Password must contain at least one number.")
         if not any(char.isalpha() for char in password):
-            return render_template("register.html", error="Password must contain at least one letter.")
+            return render_template("register.html", form=form, error="Password must contain at least one letter.")
         if not any(char.isupper() for char in password):
-            return render_template("register.html", error="Password must contain at least one uppercase letter.")
+            return render_template("register.html", form=form, error="Password must contain at least one uppercase letter.")
         if not any(char.islower() for char in password):
-            return render_template("register.html", error="Password must contain at least one lowercase letter.")
+            return render_template("register.html", form=form, error="Password must contain at least one lowercase letter.")
         if not any(char in "!@#$%^&*()-_=+<>?/" for char in password):
-            return render_template("register.html", error="Password must contain at least one special character (example: !@#$%^&*)")
+            return render_template("register.html", form=form, error="Password must contain at least one special character (example: !@#$%^&*)")
 
         password_bytes = password.encode('utf-8') #hash password
         password_hash = bcrypt.hashpw(password_bytes, bcrypt.gensalt())
@@ -71,9 +83,9 @@ def register():
             return redirect(url_for('account.login'))
         except Exception as e:
             db.session.rollback()
-            return render_template("register.html", error=f"There was an issue creating your account: {str(e)}")
+            return render_template("register.html", form=form, error=f"There was an issue creating your account: {str(e)}")
 
-    return render_template("register.html")
+    return render_template("register.html", form=form)
 
 @account_bp.route('/account', methods=['POST', 'GET'])
 def account():

@@ -7,13 +7,14 @@
 {% block body %}
     <h1>Welcome to the Login Page</h1>
         <form action="/login" method="POST">
+        {{ form.hidden_tag() }}
             <div class="username_login">
-                <label for="username_login">Username:</label>
-                <input type="text" name="username_login" id="username_login"/>
+                {{ form.username.label }}
+                {{ form.username }}
             </div>
             <div class="password_login">
-                <label for="password_login">Password:</label>
-                <input type="password" name="password_login" id="password_login"/>
+                {{ form.password.label }}
+                {{ form.password }}
             </div>
             <button type="submit">Login</button>
         </form>

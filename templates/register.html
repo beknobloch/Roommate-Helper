@@ -9,17 +9,18 @@
 {% block body %}
 <h1>Create an account</h1>
 <form action="/register" method="POST">
+    {{ form.hidden_tag() }}
     <div class="username">
-        <label for="username">Username:</label>
-        <input type="text" name="username" id="username" required />
+       {{ form.username.label }}
+        {{ form.username }}
     </div>
     <div class="password">
-        <label for="password">Password:</label>
-        <input type="password" name="password" id="password" required />
+        {{ form.password.label }}
+        {{ form.password }}
     </div>
     <div class="balance">
-        <label for="balance">Balance:</label>
-        <input type="number" name="balance" id="balance" required min="0">
+        {{ form.balance.label }}
+        {{ form.balance }}
     </div>
     <button type="submit">Register</button>
 </form>
