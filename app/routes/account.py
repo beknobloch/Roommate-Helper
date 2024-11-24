@@ -159,7 +159,6 @@ def pay(id):
         owed_list = []
         for user_item, item in owed_items:
             share = item.itemPrice / len(item.user_items)  # Split price among all users
-            owed_balance -= share
             owed_list.append({
                 "item": item,
                 "amount": share,
