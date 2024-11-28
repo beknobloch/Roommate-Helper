@@ -57,20 +57,6 @@ def register():
         if Users.query.filter_by(username=username).first(): #no duplicate usernames
             return render_template("register.html", form=form, error="Username already exists.")
 
-        # password validation
-        if len(password) < 8:
-            return render_template("register.html", form=form, error="Password must be at least 8 characters long.")
-        if not any(char.isdigit() for char in password):
-            return render_template("register.html", form=form, error="Password must contain at least one number.")
-        if not any(char.isalpha() for char in password):
-            return render_template("register.html", form=form, error="Password must contain at least one letter.")
-        if not any(char.isupper() for char in password):
-            return render_template("register.html", form=form, error="Password must contain at least one uppercase letter.")
-        if not any(char.islower() for char in password):
-            return render_template("register.html", form=form, error="Password must contain at least one lowercase letter.")
-        if not any(char in "!@#$%^&*()-_=+<>?/" for char in password):
-            return render_template("register.html", form=form, error="Password must contain at least one special character (example: !@#$%^&*)")
-
         password_bytes = password.encode('utf-8') #hash password
         password_hash = bcrypt.hashpw(password_bytes, bcrypt.gensalt())
 

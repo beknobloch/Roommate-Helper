@@ -10,17 +10,29 @@
 <h1>Create an account</h1>
 <form action="/register" method="POST">
     {{ form.hidden_tag() }}
+
     <div class="username">
        {{ form.username.label }}
         {{ form.username }}
+        {% if form.username.errors %}
+            <span class="text-danger">{{ form.username.errors[0] }}</span>
+        {% endif %}
     </div>
+
     <div class="password">
         {{ form.password.label }}
         {{ form.password }}
+        {% if form.password.errors %}
+            <span class="text-danger">{{ form.password.errors[0] }}</span>
+        {% endif %}
     </div>
+
     <div class="balance">
         {{ form.balance.label }}
         {{ form.balance }}
+        {% if form.balance.errors %}
+            <span class="text-danger">{{ form.balance.errors[0] }}</span>
+        {% endif %}
     </div>
     <button type="submit">Register</button>
 </form>
