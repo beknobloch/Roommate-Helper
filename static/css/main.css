@@ -66,6 +66,25 @@
         text-decoration: none;
     }
 
+   .logout_btn {
+       align-self: flex-end;
+        color: white; /* Text color */
+        text-align: center; /* Center-align text */
+        padding: 14px 26px; /* Padding around the links */
+        text-decoration: none; /* Remove underline */
+        border-radius: 32px; /* Make the border circular */
+        border: 2px solid #232020; /* Border style */
+        display: inline-block; /* Ensures elements are displayed inline */
+        background-color: #232020;
+        margin: 0 5px;
+    }
+
+    .logout_btn:hover {
+        background-color: #ddd; /* Background color on hover */
+        color: #232020; /* Text color on hover */
+        text-decoration: none;
+    }
+
     .logged-in-message {
         color: white; /* Text color for logged in message */
         margin-left: auto; /* Margin for separation */

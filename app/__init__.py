@@ -4,6 +4,7 @@ from flask_login import LoginManager
 import redis
 from .config import Config
 from flask_migrate import Migrate
+from app.forms import LogoutForm
 
 login_manager = LoginManager()
 cache = None  # Initialized after app is created
@@ -15,6 +16,7 @@ def create_app():
         template_folder="../templates",
         static_folder="../static"
     )
+
     app.config.from_object(Config)
     db.init_app(app)
     migrate.init_app(app, db)
@@ -22,6 +24,8 @@ def create_app():
 
     global cache
     cache = redis.Redis(host='redis', port=6379)
+
+
 
     # Register blueprints
     from .routes.homepage import homepage_bp

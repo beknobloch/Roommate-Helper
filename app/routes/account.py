@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from flask_login import login_user, logout_user, current_user
 from ..models import Users, db, Items, UserItem
-from app.forms import LoginForm, RegisterForm
+from app.forms import LoginForm, RegisterForm, LogoutForm
 import bcrypt
 
 account_bp = Blueprint('account', __name__, template_folder='../../templates')
@@ -35,10 +35,13 @@ def login():
             return f'There was an issue logging into your account: {str(e)}'
     return render_template('login.html', form=form)
 
-@account_bp.route('/account_logout')
+@account_bp.route('/account_logout', methods=['POST'])
 def account_logout():
-    logout_user()
-    return redirect(url_for('account.login'))
+    form = LogoutForm()
+    if form.validate_on_submit():
+        logout_user()
+        return redirect(url_for('account.login'))
+    return redirect(url_for('homepage.index'))
 
 @account_bp.route('/register', methods=['GET', 'POST'])
 def register():

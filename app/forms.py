@@ -12,3 +12,6 @@ class RegisterForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired(), Length(min=8)])
     balance = DecimalField('Balance', validators=[DataRequired(), NumberRange(min=0)], default=0.0)
     submit = SubmitField('Register')
+
+class LogoutForm(FlaskForm):
+    submit = SubmitField('Logout')

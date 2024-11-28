@@ -1,6 +1,10 @@
-from app import create_app
+from app import create_app, LogoutForm
 
 app = create_app()
+
+@app.context_processor
+def inject_logout_form():
+    return {'logout_form': LogoutForm()}
 
 if __name__ == "__main__":
     with app.app_context():
