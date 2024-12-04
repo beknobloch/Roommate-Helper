@@ -2,18 +2,18 @@ services:
   flask-app:
     build: .
     ports:
-      - "8080:8080"
+      - "8000:8000"
     environment:
       FLASK_APP: run.py
       FLASK_RUN_HOST: 0.0.0.0
-      FLASK_RUN_PORT: 8080
+      FLASK_RUN_PORT: 8000
       FLASK_ENV: development
     volumes:
       - .:/code
     depends_on:
       - redis
     command: >
-      sh -c "flask db upgrade && flask run.py"
+      sh -c "flask db upgrade && flask run"
 
   redis:
     image: redis:alpine

@@ -13,3 +13,15 @@ if __name__ == "__main__":
         db.create_all()
 
     app.run(host="0.0.0.0", port=8080)
+
+@app.after_request
+def set_csp(response):
+    response.headers['Content-Security-Policy'] = (
+        "default-src 'self'; script-src 'self'; style-src 'self';"
+    )
+    return response
+
+@app.after_request
+def set_x_frame_options(response):
+    response.headers['X-Frame-Options'] = 'DENY'
+    return response
