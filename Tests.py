@@ -4,7 +4,7 @@ from app.routes.ledger import ledger_bp
 from app import create_app
 
 
-class LedgerTestCase(unittest.TestCase):
+class LedgerTestCases(unittest.TestCase):
     def setUp(self):
         self.app = create_app()
         self.app.app_context().push()
