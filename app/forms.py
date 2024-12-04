@@ -5,7 +5,14 @@ from wtforms.validators import DataRequired, Length, NumberRange, Regexp
 
 
 class LoginForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired()])
+    username = StringField(
+        'Username',
+        validators=[
+            DataRequired(),
+            Length(min=3, max=50),
+            Regexp(r'^[a-zA-Z0-9_]+$', message="Username must contain only letters, numbers, and underscores.")
+        ]
+    )
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')
 
