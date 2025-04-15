@@ -1,8 +1,24 @@
 # Roommate Helper
 [![beknobloch](https://circleci.com/gh/beknobloch/Roommate-Helper.svg?style=svg)](https://app.circleci.com/pipelines/github/beknobloch/Roommate-Helper?branch=main&filter=all)
 
+## Getting Started
+To run a local instance of Roommate Helper, follow these steps.
+1. Clone this repository
+2. [Download Docker](https://www.docker.com/products/docker-desktop/) (if not downloaded already)
+3. Open Docker
+4. Run these two commands in your terminal (at the project's directory): 
+```bash
+docker-compose build
+docker-compose up 
+```
+5. Open http://localhost:8000 or to access the application 
 
- As one of several roommates in an apartment, the issue of who buys what and for whom quickly becomes sticky and intractable. As our ad hoc solutions quickly became unmanageable, we thought we'd develop an application that we could actually use to solve this surprisingly complex payment attribution problem. The Roommate Helper app solves this problem. Several images are provided below to explain the final product. See the [Project Report](https://www.overleaf.com/read/wxqgkqgsfrzv##d96ac0) for a more detailed overview of this project.
+Note: You can stop the application from running by pressing the keys CTRL + C in the terminal.
+
+## Application Overview
+
+
+As one of several roommates in an apartment, the issue of who buys what and for whom quickly becomes sticky and intractable. As our ad hoc solutions quickly became unmanageable, we thought we'd develop an application that we could actually use to solve this surprisingly complex payment attribution problem. The Roommate Helper app solves this problem. Several images are provided below to explain the final product. See the [Project Report](https://www.overleaf.com/read/wxqgkqgsfrzv##d96ac0) for a more detailed overview of this project. To see the most recent changes made, see the [DevSecOps Report](https://drive.google.com/file/d/1hQiC7p6o70_iIEbWEgvzZKQV9gk0OUBr/view?usp=sharing).
 
  #### The Home Page shows the items that a user owes money for. 
 <img width="1402" alt="SSW345_FinalReport_Home" src="https://github.com/beknobloch/ssw345_FinalProject/assets/142749402/e473867f-e35a-4dba-bf99-df50b416db6a">
